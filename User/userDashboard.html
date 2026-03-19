@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Profile — USeP ePark</title>
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../User/css/user.css">
@@ -190,18 +191,35 @@
           <div class="section-title">Change Password</div>
           <div class="info-grid">
 
-            <div class = "PasswordConfiguration"> 
+           <div class="PasswordConfiguration"> 
               <label for="currentPassword">Current Password</label>
-              <input type="password" id = "currentPasswordInput" name="currentPasswordInput" placeholder=" "> 
-              <label for="newPassword">New Password</label>
-              <input type="password" id = "newPasswordInput" name="newPasswordInput" placeholder=" "> 
-              <label for="confirmPassword">Confirm New Password</label>
-              <input type="password" id = "confirmPasswordInput" name="confirmPasswordInput" placeholder=" " required> 
+              <div class="input-wrap">
+                <input type="password" id="currentPasswordInput" name="currentPasswordInput" placeholder=" ">
+                <button class="input-toggle" type="button" onclick="togglePw('currentPasswordInput')">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+              </div>
 
-               <button type="button" id="confirmPasswordButton">
-                Update Password
-               </button> 
-            </div>
+              <label for="newPassword">New Password</label>
+              <div class="input-wrap">
+                <input type="password" id="newPasswordInput" name="newPasswordInput" placeholder=" ">
+                <button class="input-toggle" type="button" onclick="togglePw('newPasswordInput')">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+              </div>
+
+              <label for="confirmPassword">Confirm New Password</label>
+              <div class="input-wrap">
+                <input type="password" id="confirmPasswordInput" name="confirmPasswordInput" placeholder=" " required>
+                <button class="input-toggle" type="button" onclick="togglePw('confirmPasswordInput')">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+      </div>
+
+  <button type="button" id="confirmPasswordButton">
+    Update Password
+  </button> 
+</div>
 
             <div style="margin-top: 10px; ">
               <div style="background: #6b0606; border-radius: 10px; padding: 24px; align-self: start;"> 
