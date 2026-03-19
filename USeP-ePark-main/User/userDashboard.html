@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Profile — USeP ePark</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../User/css/user.css">
+</head>
+<body>
+<div class="layout">
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="sidebar" id="sidebar">
+     <div class="sidebar-header">
+      <img src="../assets/logo-icon.svg" class="sidebar-logo" alt="ePark Logo" style="width:32px;height:32px;border-radius:8px;object-fit:cover;flex-shrink:0;">
+      <img src="../assets/logo-white.svg" class="sidebar-brand" alt="ePark" style="height:36px;object-fit:contain;object-position:left;">
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Main</div>
+
+      <a class="nav-item active" href="userDashboard.html" data-tooltip="Profile">
+        <span class="nav-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20a6 6 0 0 0-12 0"/><circle cx="12" cy="10" r="4"/><circle cx="12" cy="12" r="10"/></svg>
+        </span>
+        <span class="nav-label">Profile</span>
+      </a>
+
+      <a class="nav-item" href="parkingreservations.html" data-tooltip="Parking Reservations">
+        <span class="nav-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21 8-2 2-1.5-3.7A2 2 0 0 0 15.646 5H8.4a2 2 0 0 0-1.903 1.257L5 10 3 8"/><path d="M7 14h.01"/><path d="M17 14h.01"/><rect width="18" height="8" x="3" y="10" rx="2"/><path d="M5 18v2"/><path d="M19 18v2"/></svg>
+        </span>
+        <span class="nav-label">Parking Reservations</span>
+      </a>
+
+      <a class="nav-item" href="qr.html" data-tooltip="QR Code">
+        <span class="nav-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M7 12h10"/></svg>
+        </span>
+        <span class="nav-label">QR Code</span>
+      </a>
+
+      <div class="nav-section-label">Account</div>
+
+      <a class="nav-item" href="logs.html" data-tooltip="Parking History">
+        <span class="nav-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/><path d="M16 22a4 4 0 0 0-8 0"/><circle cx="12" cy="15" r="3"/></svg>
+        </span>
+        <span class="nav-label">Parking History</span>
+      </a>
+
+      <a class="nav-item" href="transactions.html" data-tooltip="Transactions / Receipts">
+        <span class="nav-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2"/><path d="M3 11h3c.8 0 1.6.3 2.1.9l1.1.9c1.6 1.6 4.1 1.6 5.7 0l1.1-.9c.5-.5 1.3-.9 2.1-.9H21"/></svg>
+        </span>
+        <span class="nav-label">Transactions / Receipts</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="sidebar-toggle" id="sidebarToggle">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 17l-5-5 5-5M18 17l-5-5 5-5"/></svg>
+        <span class="sidebar-toggle-label">Collapse</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ── MAIN ── -->
+  <div class="main" id="mainArea">
+
+    <!-- ── TOPBAR ── -->
+    <header class="topbar">
+      <h2 class="topbar-title">PROFILE</h2>
+      <div class="topbar-spacer"></div>
+      <div class="topbar-search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" placeholder="Search anything...">
+      </div>
+      <button class="topbar-btn" title="Notifications">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <span class="topbar-notif-dot"></span>
+      </button>
+      <div class="topbar-user">
+        <div class="topbar-avatar"><img src="../assets/avatars/avatar-guest.svg" class="topbar-avatar" alt="Admin" style="width:30px;height:30px;border-radius:6px;object-fit:cover;"></div>
+        <div class="topbar-user-info">
+          <div class="topbar-user-name">User</div>
+          <div class="topbar-user-role">Guest</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ── PERSONAL CONTENT ── -->
+    <div class="page-content">
+
+      <div class="page-header fade-up">
+        <h1>My Profile</h1>
+        <p>View and manage your personal details</p>
+      </div>
+
+      
+      <!-- USER INFO CONTAINER -->
+      <div class="card fade-up delay-1">
+
+        <!-- Avatar + Edit Button -->
+        <div class="profile-card-header">
+          <div class="avatar-wrapper">
+            <img src ="../User/assets/img/userDefaultProfile.jpg">
+            </svg>
+          </div>
+
+          <button type="button" id="editProfileButton" onclick="window.location.href='editProfile.html'">
+            Edit Profile
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M13 21h8"/>
+              <path d="m15 5 4 4"/>
+              <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Personal Information -->
+        <div class="card-body">
+          <div class="section-title">Personal Information</div>
+          <div class="info-grid">
+
+            <div class="info-field">
+              <span class="info-label">Name</span>
+              <span class="info-value">User</span>
+            </div>
+
+            <div class="info-field">
+              <span class="info-label">Date of Birth</span>
+              <span class="info-value">April 23, 2000</span>
+            </div>
+
+            <div class="info-field">
+              <span class="info-label">Gender</span>
+              <span class="info-value">Male</span>
+            </div>
+
+            <div class="info-field">
+              <span class="info-label">Vehicle Type</span>
+              <span class="info-value">Car</span>
+            </div>
+
+            <div class="info-field">
+              <span class="info-label">License Plate Number</span>
+              <span class="info-value">JKL 3456</span>
+            </div>
+
+            <div class="info-field">
+              <span class="info-label">Email</span>
+              <span class="info-value">example@gmail.com</span>
+            </div>
+
+            <div class="info-field">
+              <span class="info-label">Contact</span>
+              <span class="info-value">09827444671</span>
+            </div>
+
+          </div>
+        </div>
+
+      </div> 
+      <!-- END OF USER INFO-->
+
+      
+    </div> 
+    <!-- END OF PERSONAL CONTENT -->
+
+    
+       <!-- ── SECURITY ── -->
+    <div class="page-content">
+
+      <div class="page-header fade-up">
+        <h1>SECURITY</h1>
+        <p>Manage your password and account security</p>
+      </div>
+
+      
+      <!-- USER INFO CONTAINER -->
+      <div class="card fade-up delay-1">
+
+      
+
+        <!-- Personal Information -->
+        <div class="card-body">
+          <div class="section-title">Change Password</div>
+          <div class="info-grid">
+
+            <div class = "PasswordConfiguration"> 
+              <label for="currentPassword">Current Password</label>
+              <input type="text" id = "currentPasswordInput" name="currentPasswordInput" placeholder=" "> 
+              <label for="newPassword">New Password</label>
+              <input type="text" id = "newPasswordInput" name="newPasswordInput" placeholder=" "> 
+              <label for="confirmPassword">Confirm New Password</label>
+              <input type="text" id = "confirmPasswordInput" name="confirmPasswordInput" placeholder=" " required> 
+
+               <button type="button" id="confirmPasswordButton">
+                Update Password
+               </button> 
+            </div>
+
+            <div style="margin-top: 10px; ">
+              <div style="background: #6b0606; border-radius: 10px; padding: 24px; align-self: start;"> 
+              <strong id = "passwordTips">🔒 Password Tips</strong>
+              <ul id="passwordTipsList">
+                <li>At least 8 characters long</li>
+                <li>Mix uppercase and lowercase letters</li>
+                <li>Include numbers and symbols</li>
+                <li>Avoid using your name or birthdate</li>
+              </ul> 
+
+              <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border);">
+                <p style="font-size: 14px; color: var(--border);">Forgot your password or having trouble?</p>
+                <!-- Wa pani link sa gmail or contact someshit-->
+                <a href=" " id ="ContactSupportLink">Contact Support  
+                  <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </a>
+              </div>
+            </div>
+          </div> 
+
+          </div>
+        </div>
+
+      </div> 
+      <!-- END OF SECURITY -->
+
+  </div>
+  <!-- END MAIN -->
+  <footer class = "footer">
+    <p>Copyright © 2026. All Rights Reserved.</p>
+    <p><a href="">Terms of Service </a> | <a href="">Privacy Policy</a></p>
+  </footer>
+</div>
+
+<script src="../User/js/user.js"></script>
+<script>
+  // Sidebar toggle
+  const sidebar = document.getElementById('sidebar');
+  const mainArea = document.getElementById('mainArea');
+  document.getElementById('sidebarToggle').addEventListener('click', () => {
+    sidebar.classList.toggle('collapsed');
+    mainArea.classList.toggle('expanded');
+  });
+</script>
+</body>
+</html>
