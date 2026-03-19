@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reports — USeP ePark Admin</title>
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/admin.css">
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header"><img src="../assets/logo-icon.svg" class="sidebar-logo" alt="ePark Logo" style="width:32px;height:32px;border-radius:8px;object-fit:cover;flex-shrink:0;"><img src="../assets/logo-white.svg" class="sidebar-brand" alt="ePark" style="height:36px;object-fit:contain;object-position:left;"></div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Main</div>
+      <a class="nav-item" href="dashboard.html" data-tooltip="Dashboard"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></span><span class="nav-label">Dashboard</span></a>
+      <a class="nav-item" href="vehicles.html" data-tooltip="Vehicles"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></span><span class="nav-label">Vehicles</span></a>
+      <a class="nav-item" href="slots.html" data-tooltip="Slot Monitoring"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/></svg></span><span class="nav-label">Slot Monitoring</span></a>
+      <div class="nav-section-label">Management</div>
+      <a class="nav-item" href="reservations.html" data-tooltip="Reservations"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></span><span class="nav-label">Reservations</span><span class="nav-badge">3</span></a>
+      <a class="nav-item" href="logs.html" data-tooltip="Entry / Exit Logs"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span><span class="nav-label">Entry / Exit Logs</span></a>
+      <a class="nav-item active" href="reports.html" data-tooltip="Reports"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span><span class="nav-label">Reports</span></a>
+      <a class="nav-item" href="users.html" data-tooltip="User Access"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span><span class="nav-label">User Access</span></a>
+    </nav>
+    <div class="sidebar-footer"><button class="sidebar-toggle" id="sidebarToggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 17l-5-5 5-5M18 17l-5-5 5-5"/></svg><span class="sidebar-toggle-label">Collapse</span></button></div>
+  </aside>
+
+  <div class="main" id="mainArea">
+    <header class="topbar">
+      <h2 class="topbar-title">Reports</h2>
+      <div class="topbar-spacer"></div>
+      <div class="topbar-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" placeholder="Search anything..."></div>
+      <button class="topbar-btn" id="notifBtn" title="Notifications">
+  <img src="../assets/icons/icon-bell.svg" alt="Notifications" style="width:17px;height:17px;">
+  <span class="topbar-notif-dot"></span>
+</button>
+      <div class="topbar-user"><img src="../assets/avatars/avatar-admin.svg" class="topbar-avatar" alt="Admin" style="width:30px;height:30px;border-radius:6px;object-fit:cover;"><div class="topbar-user-info"><div class="topbar-user-name">Admin</div><div class="topbar-user-role">Superadmin</div></div></div>
+    </header>
+
+    <div class="page-content">
+      <div class="page-header fade-up">
+        <div class="breadcrumb"><a href="dashboard.html">Dashboard</a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg><span>Reports</span></div>
+        <h1>Reports & Analytics</h1>
+        <p>Generate and export parking activity reports</p>
+      </div>
+
+      <div class="card fade-up delay-1" style="margin-bottom:16px;">
+        <div class="card-header"><span class="card-title">Generate Report</span></div>
+        <div class="card-body">
+          <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;">
+            <div class="form-group" style="margin:0;">
+              <label class="form-label">Report Type</label>
+              <select class="form-control" style="min-width:180px;">
+                <option>Daily Summary</option>
+                <option>Weekly Summary</option>
+                <option>Monthly Summary</option>
+                <option>Vehicle Activity</option>
+                <option>Revenue Report</option>
+                <option>Slot Utilization</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin:0;">
+              <label class="form-label">Date From</label>
+              <input type="date" class="form-control" style="min-width:150px;">
+            </div>
+            <div class="form-group" style="margin:0;">
+              <label class="form-label">Date To</label>
+              <input type="date" class="form-control" style="min-width:150px;">
+            </div>
+            <div class="form-group" style="margin:0;">
+              <label class="form-label">Format</label>
+              <select class="form-control" style="min-width:100px;">
+                <option>PDF</option>
+                <option>Excel</option>
+                <option>CSV</option>
+              </select>
+            </div>
+            <button class="btn btn-primary" style="margin-bottom:18px;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Generate
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2 fade-up delay-2" style="margin-bottom:16px;">
+        <div class="card">
+          <div class="card-header"><span class="card-title">This Month's Summary</span><span class="badge badge-maroon">March 2026</span></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--border);">
+            <div class="report-metric" style="border-right:1px solid var(--border);">
+              <div class="report-metric-val">1,284</div>
+              <div class="report-metric-label">Total Entries</div>
+            </div>
+            <div class="report-metric">
+              <div class="report-metric-val">₱58.2K</div>
+              <div class="report-metric-label">Revenue</div>
+            </div>
+            <div class="report-metric" style="border-top:1px solid var(--border);border-right:1px solid var(--border);">
+              <div class="report-metric-val">72%</div>
+              <div class="report-metric-label">Avg Occupancy</div>
+            </div>
+            <div class="report-metric" style="border-top:1px solid var(--border);">
+              <div class="report-metric-val">1h 42m</div>
+              <div class="report-metric-label">Avg Duration</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><span class="card-title">Monthly Revenue Trend</span></div>
+          <div class="card-body">
+            <div class="bar-chart" style="height:120px;">
+              <div class="bar-col"><div class="bar" style="height:55%;"></div><div class="bar-label">Sep</div></div>
+              <div class="bar-col"><div class="bar" style="height:65%;"></div><div class="bar-label">Oct</div></div>
+              <div class="bar-col"><div class="bar" style="height:72%;"></div><div class="bar-label">Nov</div></div>
+              <div class="bar-col"><div class="bar" style="height:50%;background:var(--border-strong);"></div><div class="bar-label">Dec</div></div>
+              <div class="bar-col"><div class="bar" style="height:80%;"></div><div class="bar-label">Jan</div></div>
+              <div class="bar-col"><div class="bar" style="height:88%;"></div><div class="bar-label">Feb</div></div>
+              <div class="bar-col"><div class="bar" style="height:62%;background:var(--maroon);"></div><div class="bar-label">Mar</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card fade-up delay-3">
+        <div class="card-header">
+          <span class="card-title">Top Vehicles by Activity</span>
+          <span class="badge badge-gold">This Month</span>
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Plate Number</th>
+                <th>Owner</th>
+                <th>Type</th>
+                <th>Total Entries</th>
+                <th>Total Hours</th>
+                <th>Total Fee</th>
+                <th>Avg Duration</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--gold);">1</span></td>
+                <td class="td-mono">ABJ 1234</td>
+                <td style="font-size:13px;">Juan dela Cruz</td>
+                <td><span class="badge badge-info">Car</span></td>
+                <td style="font-weight:700;">42</td>
+                <td style="font-family:'JetBrains Mono',monospace;font-size:12px;">68h 30m</td>
+                <td style="font-weight:700;color:var(--success);">₱2,050</td>
+                <td style="font-size:12px;color:var(--text-muted);">1h 38m</td>
+              </tr>
+              <tr>
+                <td><span style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--text-muted);">2</span></td>
+                <td class="td-mono">MNO 9999</td>
+                <td style="font-size:13px;">Pedro Reyes</td>
+                <td><span class="badge badge-info">Car</span></td>
+                <td style="font-weight:700;">38</td>
+                <td style="font-family:'JetBrains Mono',monospace;font-size:12px;">57h 20m</td>
+                <td style="font-weight:700;color:var(--success);">₱1,720</td>
+                <td style="font-size:12px;color:var(--text-muted);">1h 30m</td>
+              </tr>
+              <tr>
+                <td><span style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--text-muted);">3</span></td>
+                <td class="td-mono">XYZ 5678</td>
+                <td style="font-size:13px;">Maria Santos</td>
+                <td><span class="badge badge-gold">Motorcycle</span></td>
+                <td style="font-weight:700;">35</td>
+                <td style="font-family:'JetBrains Mono',monospace;font-size:12px;">42h 10m</td>
+                <td style="font-weight:700;color:var(--success);">₱1,050</td>
+                <td style="font-size:12px;color:var(--text-muted);">1h 12m</td>
+              </tr>
+              <tr>
+                <td><span style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--text-muted);">4</span></td>
+                <td class="td-mono">AGF 3322</td>
+                <td style="font-size:13px;">Ana Gomez</td>
+                <td><span class="badge badge-gold">Motorcycle</span></td>
+                <td style="font-weight:700;">29</td>
+                <td style="font-family:'JetBrains Mono',monospace;font-size:12px;">31h 45m</td>
+                <td style="font-weight:700;color:var(--success);">₱870</td>
+                <td style="font-size:12px;color:var(--text-muted);">1h 06m</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../js/admin.js"></script>
+</body>
+</html>
