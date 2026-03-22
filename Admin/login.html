@@ -5,7 +5,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login — USeP ePark Admin</title>
+<title>Login — USeP ePark</title>
 <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -297,6 +297,18 @@
     align-items: center;
     gap: 8px;
   }
+
+  
+  /* ── REGISTER LINK ── */
+  .register-link {
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 16px;
+  }
+  .register-link a { color: var(--maroon); font-weight: 600; text-decoration: none; }
+  .register-link a:hover { color: var(--maroon-light); text-decoration: underline; }
+
   .error-msg svg { width: 14px; height: 14px; flex-shrink: 0; }
 
   @keyframes fadeUp {
@@ -341,8 +353,8 @@
   </div>
 
   <div class="login-right">
-    <h2>Admin Login</h2>
-    <p class="sub">Sign in to access the admin panel</p>
+    <h2>Login</h2>
+    <p class="sub">Sign in to access your account</p>
 
     <div class="error-msg" id="errorMsg">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
@@ -383,6 +395,11 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
       Sign In
     </button>
+
+     <!-- ── REGISTER LINK — users only ── -->
+    <div class="register-link">
+      Don't have an account? <a href="../User/register.html">Register here</a>
+    </div>
 
     <div class="login-footer">
       University of Southeastern Philippines &mdash; Tagum Campus<br>
