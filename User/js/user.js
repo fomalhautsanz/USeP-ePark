@@ -31,9 +31,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 16);
   });
 
-  /* ── SLOT ITEM CLICK → MODAL (view-only for users) ── */
-  const slotItems   = document.querySelectorAll('.slot-item');
-  const slotModal   = document.getElementById('slotModal');
+  /* ── SLOT ITEM CLICK → MODAL ── */
+  const slotItems       = document.querySelectorAll('.slot-item');
+  const slotModal       = document.getElementById('slotModal');
   const modalSlotNum    = document.getElementById('modalSlotNum');
   const modalSlotStatus = document.getElementById('modalSlotStatus');
 
@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
     slot.addEventListener('click', () => {
       if (!slotModal) return;
 
-      // para d maka access si user sa reserved, maint, and occupied 
+      // only available slots can be reserved
       if (!slot.classList.contains('available')) return;
 
       const number = slot.querySelector('.slot-number')?.textContent  || '';
@@ -51,12 +51,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const modalTitle = document.getElementById('modalTitle');
       if (modalTitle) modalTitle.textContent = `Reserve Slot ${number}`;
 
-      if (modalSlotNum)    modalSlotNum.textContent    = number;
+      if (modalSlotNum) modalSlotNum.textContent = number;
       if (modalSlotStatus) {
         modalSlotStatus.textContent = status;
-        // swap badge colour based on status
         modalSlotStatus.className = 'badge';
-        if (slot.classList.contains('available'))   modalSlotStatus.classList.add('badge-success');
+        if (slot.classList.contains('available'))        modalSlotStatus.classList.add('badge-success');
         else if (slot.classList.contains('occupied'))    modalSlotStatus.classList.add('badge-danger');
         else if (slot.classList.contains('reserved'))    modalSlotStatus.classList.add('badge-gold');
         else if (slot.classList.contains('maintenance')) modalSlotStatus.classList.add('badge-muted');
@@ -69,12 +68,8 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ── MODAL CLOSE ── */
   const closeModal = () => {
     document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('open'));
-    // reset date input
     const dateInput = document.getElementById('ReserveDateInput');
     if (dateInput) dateInput.value = '';
-    // reset type of visit
-    const VisitType = document.getElementById('VisitType');
-    if (VisitType) VisitType.selectedIndex = 0;
   };
 
   document.querySelectorAll('.modal-close, [data-close-modal]').forEach(btn => {
@@ -98,17 +93,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const val = sectionFilter.value.toUpperCase();
       document.querySelectorAll('.slot-item').forEach(slot => {
         const num = slot.querySelector('.slot-number')?.textContent || '';
-        if (!val || num.startsWith(val)) {
-          slot.closest('[style*="margin-bottom"]') 
-            ? slot.style.display = ''
-            : slot.style.display = '';
-          slot.style.display = '';
-        } else {
-          slot.style.display = 'none';
-        }
+        slot.style.display = (!val || num.startsWith(val)) ? '' : 'none';
       });
 
-      // also show/hide section headers
       document.querySelectorAll('.slot-grid').forEach(grid => {
         const sectionHeader = grid.previousElementSibling;
         if (!val) {
@@ -130,7 +117,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const notifBtn = document.getElementById('notifBtn');
   if (notifBtn) {
     notifBtn.addEventListener('click', () => {
-      // placeholder — hook up to real notification panel later
       console.log('Notifications clicked');
     });
   }
@@ -142,4 +128,46 @@ document.addEventListener('DOMContentLoaded', () => {
     dateInput.min = today;
   }
 
+  /* ── PASSWORD TOGGLE ── */
+  window.togglePw = function(id) {
+    const input = document.getElementById(id);
+    if (input) {
+      input.type = input.type === 'password' ? 'text' : 'password';
+    }
+  };
+
 });
+
+/* ── TRANSACTIONS ── */
+
+const hourlyRate = 20;
+
+function generateReceipt() {
+  let entry = new Date();
+  let exit  = new Date(entry.getTime() + 7200000); // demo: +2 hours
+  let durationHours = Math.ceil((exit - entry) / 3600000);
+  let total = durationHours * hourlyRate;
+
+  const set = (id, val) => { const el = document.getElementById(id); if (el) el.innerText = val; };
+
+  set('entryTime',  entry.toLocaleTimeString());
+  set('exitTime',   exit.toLocaleTimeString());
+  set('duration',   durationHours + ' hour(s)');
+  set('totalFee',   '₱' + total);
+  set('receiptFee', '₱' + total);
+
+  let txnId = 'TXN-' + Math.floor(Math.random() * 1000000);
+  set('txnId',   txnId);
+  set('txnDate', new Date().toLocaleString());
+
+  const qrCanvas = document.getElementById('qrCode');
+  if (qrCanvas && typeof QRCode !== 'undefined') {
+    QRCode.toCanvas(qrCanvas, txnId);
+  }
+}
+
+if (document.getElementById('txnId')) generateReceipt();
+
+function printReceipt() {
+  window.print();
+}

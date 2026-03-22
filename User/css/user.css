@@ -412,6 +412,7 @@ ul { list-style: none; }
   border: 1px solid var(--border);
   box-shadow: var(--shadow-sm);
   overflow: hidden;
+  margin-bottom: 20px;
 }
 .card-header {
   padding: 18px 22px;
@@ -420,9 +421,11 @@ ul { list-style: none; }
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  font-weight: 600;
+  color: var(--maroon);
 }
 .card-title { font-weight: 700; font-size: 14px; color: var(--text-primary); }
-.card-body { padding: 28px; }
+.card-body { padding: 20px; }
 
 /* ── PROFILE CARD HEADER ── */
 .profile-card-header {
@@ -469,22 +472,39 @@ ul { list-style: none; }
 }
 #editProfileButton:hover { background-color: #5A1220; transform: scale(1.05); }
 
-/* ── INPUT FOCUS ── */
-input:focus {
+/* ── INPUT ── */
+input {
   caret-color: #5A1220;
   outline: none;
+  padding: 10px;
+  padding-right: 36px;
+}
+
+input:focus {
   border-color: var(--gold);
   box-shadow: 0 0 0 3px rgba(201,168,76,0.12);
-  padding: 5px;
 }
-/* or */ 
 
-/* input:focus {
-  caret-color: #5A1220;
-  outline: 1px solid #5A1220;
-  border-color: #5A1220;
-  padding: 0 5px;
-} */ 
+/* ── EYE TOGGLE ── */
+.input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-toggle {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  display: flex;
+  padding: 2px;
+}
+
+.input-toggle:hover { color: var(--text-primary); }
+.input-toggle svg { width: 16px; height: 16px; }
 
 /* ── PASSWORD CONFIGURATION ── */
 .PasswordConfiguration { display: flex; flex-direction: column; gap: 10px; }
@@ -503,10 +523,7 @@ input:focus {
   width: 100%;
 }
 
-#passwordTips { 
-  font-size: 16px; 
-  color: var(--gold)
-}
+#passwordTips { font-size: 16px; color: var(--gold); }
 
 #passwordTipsList {
   margin-top: 12px;
@@ -526,10 +543,7 @@ input:focus {
   transition: color 0.2s ease;
 }
 
-#ContactSupportLink:hover {
-  color: var(--gold-light);
-}
-
+#ContactSupportLink:hover { color: var(--gold-light); }
 
 /* ── CONFIRM PASSWORD BUTTON ── */
 #confirmPasswordButton {
@@ -623,8 +637,6 @@ tbody tr { transition: background var(--transition); }
 tbody tr:hover { background: var(--bg); }
 .td-mono { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; color: var(--maroon); }
 
-/* ── PARKING RESERVATION ── */
-
 /* ── BADGES ── */
 .badge {
   display: inline-flex;
@@ -657,6 +669,8 @@ tbody tr:hover { background: var(--bg); }
   font-weight: 600;
   transition: all var(--transition);
   white-space: nowrap;
+  border: none;
+  cursor: pointer;
 }
 .btn svg { width: 15px; height: 15px; }
 .btn-primary { background: var(--maroon); color: #fff; border: 1px solid var(--maroon); }
@@ -835,7 +849,7 @@ select.form-control {
   outline: none;
 }
 
-#ReserveDateInput:hover{
+#ReserveDateInput:hover {
   border-color: var(--gold);
   box-shadow: 0 0 0 3px rgba(201,168,76,0.12);
   outline: none;
@@ -870,7 +884,7 @@ select.form-control {
   background: var(--maroon);
   margin: 20px;
   border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-md);
 }
 
 .qr-container img {
@@ -878,7 +892,7 @@ select.form-control {
   height: auto;
   border: 5px solid rgb(255, 255, 255);
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-md);
 }
 
 /* ── PAGINATION ── */
@@ -1004,12 +1018,12 @@ select.form-control {
 .avatar-overlay span { font-size: 10px; font-weight: 700; color: #fff; text-transform: uppercase; letter-spacing: 0.8px; }
 #avatarFileInput { display: none; }
 .avatar-hint { font-size: 11px; color: var(--text-muted); text-align: center; }
- 
+
 /* ── EDIT FORM ── */
 .edit-form { padding: 28px; }
 .form-section { margin-bottom: 28px; }
 .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
- 
+
 /* ── FORM ACTIONS ── */
 .form-actions {
   display: flex;
@@ -1020,7 +1034,7 @@ select.form-control {
   border-top: 1px solid var(--border);
   background: #faf9f7;
 }
- 
+
 /* ── TOAST ── */
 .toast {
   position: fixed;
@@ -1043,6 +1057,68 @@ select.form-control {
 .toast.show { transform: translateY(0); opacity: 1; }
 .toast svg { width: 16px; height: 16px; color: var(--gold); flex-shrink: 0; }
 
+/* ── TRANSACTIONS ── */
+.fee-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 15px;
+}
+
+.fee-item {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  background: #fafafa;
+  font-size: 13px;
+}
+.fee-item span { display: block; color: var(--text-muted); margin-bottom: 4px; }
+.fee-item strong { font-size: 16px; color: var(--maroon); }
+.fee-item.total {
+  grid-column: span 2;
+  background: #fff4f4;
+  border-color: #e8bcbc;
+}
+
+.receipt { text-align: center; }
+
+.receipt-card .card-body {
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  min-height: 400px;
+}
+
+.receipt-card .receipt-box {
+  width: 300px;
+  border: 2px dashed var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  text-align: center;
+  font-family: 'JetBrains Mono', monospace;
+  background: white;
+  transition: var(--transition);
+  flex-shrink: 0;
+}
+.receipt-card .receipt-box:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.receipt-card .receipt-box h2 { color: var(--maroon); margin-bottom: 10px; }
+.receipt-card .receipt-box hr { margin: 10px 0; border: none; border-top: 1px dashed var(--border); }
+.receipt-footer { font-size: 12px; color: var(--text-muted); margin-top: 10px; }
+
+.qr-placeholder {
+  width: 120px;
+  height: 120px;
+  margin: 15px auto;
+  border: 2px dashed var(--border);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
 /* ── RESPONSIVE ── */
 @media (max-width: 900px) {
   .sidebar { width: var(--sidebar-collapsed); }
@@ -1062,4 +1138,3 @@ select.form-control {
   .stats-grid { grid-template-columns: 1fr 1fr; }
   .topbar-search { display: none; }
 }
-
