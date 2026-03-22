@@ -1,3 +1,15 @@
+<?php
+session_start();
+if (!isset($_SESSION['user_id'])) {
+    header('Location: http://localhost:8000/Admin/login.html');
+    exit;
+}
+if ($_SESSION['role'] === 'customer') {
+    header('Location: http://localhost:8000/User/userDashboard.php');
+    exit;
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,14 +31,14 @@
     </div>
     <nav class="sidebar-nav">
       <div class="nav-section-label">Main</div>
-      <a class="nav-item" href="dashboard.html" data-tooltip="Dashboard"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></span><span class="nav-label">Dashboard</span></a>
-      <a class="nav-item active" href="vehicles.html" data-tooltip="Vehicles"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></span><span class="nav-label">Vehicles</span></a>
-      <a class="nav-item" href="slots.html" data-tooltip="Slot Monitoring"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/></svg></span><span class="nav-label">Slot Monitoring</span></a>
+      <a class="nav-item" href="dashboard.php" data-tooltip="Dashboard"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></span><span class="nav-label">Dashboard</span></a>
+      <a class="nav-item active" href="vehicles.php" data-tooltip="Vehicles"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></span><span class="nav-label">Vehicles</span></a>
+      <a class="nav-item" href="slots.php" data-tooltip="Slot Monitoring"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/></svg></span><span class="nav-label">Slot Monitoring</span></a>
       <div class="nav-section-label">Management</div>
       <a class="nav-item" href="reservations.html" data-tooltip="Reservations"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></span><span class="nav-label">Reservations</span><span class="nav-badge">3</span></a>
       <a class="nav-item" href="logs.html" data-tooltip="Entry / Exit Logs"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span><span class="nav-label">Entry / Exit Logs</span></a>
       <a class="nav-item" href="reports.html" data-tooltip="Reports"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span><span class="nav-label">Reports</span></a>
-      <a class="nav-item" href="users.html" data-tooltip="User Access"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span><span class="nav-label">User Access</span></a>
+      <a class="nav-item" href="users.php" data-tooltip="User Access"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span><span class="nav-label">User Access</span></a>
     </nav>
     <div class="sidebar-footer">
       <button class="sidebar-toggle" id="sidebarToggle">
@@ -193,45 +205,158 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="viewVehicleModal">
+  <div class="modal" style="max-width:420px;">
+    <div class="modal-header">
+      <span class="modal-title">Vehicle Details</span>
+      <button class="modal-close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="modal-body">
+
+      <!-- Plate + status -->
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;">
+        <div style="background:var(--maroon);border-radius:12px;padding:12px 20px;flex-shrink:0;">
+          <div id="viewVehiclePlate" style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:#fff;letter-spacing:2px;line-height:1;"></div>
+          <div style="font-size:10px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1px;margin-top:2px;">Plate Number</div>
+        </div>
+        <div>
+          <div id="viewVehicleType" style="font-size:15px;font-weight:700;color:var(--text-primary);margin-bottom:6px;"></div>
+          <div id="viewVehicleStatusBadge"></div>
+        </div>
+      </div>
+
+      <!-- Details -->
+      <div style="display:flex;flex-direction:column;gap:0;border:1px solid var(--border);border-radius:10px;overflow:hidden;">
+
+        <div style="display:flex;align-items:center;padding:11px 16px;border-bottom:1px solid var(--border);background:var(--bg);">
+          <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-muted);width:120px;flex-shrink:0;">Owner</span>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <img id="viewVehicleOwnerAvatar" src="" alt=""
+              style="width:28px;height:28px;border-radius:6px;object-fit:cover;"
+              onerror="this.src='../assets/avatars/avatar-guest.svg'">
+            <div>
+              <div id="viewVehicleOwnerName" style="font-size:13px;font-weight:600;color:var(--text-primary);"></div>
+              <div id="viewVehicleOwnerCode" style="font-size:11px;color:var(--text-muted);font-family:'JetBrains Mono',monospace;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:center;padding:11px 16px;border-bottom:1px solid var(--border);">
+          <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-muted);width:120px;flex-shrink:0;">Role</span>
+          <span id="viewVehicleOwnerRole" style="font-size:13px;color:var(--text-primary);"></span>
+        </div>
+
+        <div style="display:flex;align-items:center;padding:11px 16px;border-bottom:1px solid var(--border);background:var(--bg);">
+          <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-muted);width:120px;flex-shrink:0;">Parking Status</span>
+          <span id="viewVehicleParkingStatus" style="font-size:13px;color:var(--text-primary);"></span>
+        </div>
+
+        <div style="display:flex;align-items:center;padding:11px 16px;border-bottom:1px solid var(--border);">
+          <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-muted);width:120px;flex-shrink:0;">Last Seen</span>
+          <span id="viewVehicleLastSeen" style="font-size:13px;color:var(--text-primary);font-family:'JetBrains Mono',monospace;"></span>
+        </div>
+
+        <div style="display:flex;align-items:center;padding:11px 16px;background:var(--bg);">
+          <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-muted);width:120px;flex-shrink:0;">Current Slot</span>
+          <span id="viewVehicleSlot" style="font-size:13px;color:var(--text-primary);font-family:'JetBrains Mono',monospace;"></span>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add Vehicle Modal -->
 <div class="modal-overlay" id="addVehicleModal">
   <div class="modal">
     <div class="modal-header">
       <span class="modal-title">Add New Vehicle</span>
-      <button class="modal-close" data-close-modal><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      <button class="modal-close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
     <div class="modal-body">
-      <div class="form-row">
+      <form id="createVehicleForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Plate Number</label>
+            <input type="text" name="plate_number" class="form-control" placeholder="e.g. ABJ 1234" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Vehicle Type</label>
+            <select name="vehicle_type" class="form-control">
+              <option value="car">Car</option>
+              <option value="motorcycle">Motorcycle</option>
+            </select>
+          </div>
+        </div>
+       <div class="form-group">
+          <label class="form-label">Owner (User Code)</label>
+          <div style="display:flex;gap:8px;">
+              <input type="text" id="ownerCodeInput" class="form-control" placeholder="e.g. CUS-2026-0001">
+              <button type="button" class="btn btn-outline btn-sm" id="lookupUserBtn" style="white-space:nowrap;">
+                  Look Up
+              </button>
+          </div>
+          <div id="ownerLookupResult" style="margin-top:8px;display:none;padding:10px 14px;border-radius:8px;background:var(--bg);border:1px solid var(--border);font-size:13px;"></div>
+          <input type="hidden" name="user_id" id="resolvedUserId">
+      </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" data-close-modal>Cancel</button>
+          <button type="submit" class="btn btn-primary">Register Vehicle</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Vehicle Modal -->
+<div class="modal-overlay" id="editVehicleModal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Edit Vehicle</span>
+      <button class="modal-close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <form id="editVehicleForm">
+        <input type="hidden" name="vehicle_id" id="editVehicleId">
+        <input type="hidden" name="user_id"    id="editVehicleUserId">
         <div class="form-group">
           <label class="form-label">Plate Number</label>
-          <input type="text" class="form-control" placeholder="e.g. ABJ 1234">
+          <input type="text" name="plate_number" id="editPlateNumber" class="form-control" required>
         </div>
         <div class="form-group">
           <label class="form-label">Vehicle Type</label>
-          <select class="form-control"><option>Car</option><option>Motorcycle</option></select>
+          <select name="vehicle_type" id="editVehicleType" class="form-control">
+            <option value="car">Car</option>
+            <option value="motorcycle">Motorcycle</option>
+          </select>
         </div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Owner</label>
-        <input type="text" class="form-control" placeholder="Full name of owner">
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Color</label>
-          <input type="text" class="form-control" placeholder="e.g. White">
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" data-close-modal>Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
         </div>
-        <div class="form-group">
-          <label class="form-label">Make / Model</label>
-          <input type="text" class="form-control" placeholder="e.g. Toyota Vios">
-        </div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">User Role</label>
-        <select class="form-control"><option>Student</option><option>Faculty</option><option>Staff</option><option>Guest</option></select>
-      </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Vehicle Modal -->
+<div class="modal-overlay" id="deleteVehicleModal">
+  <div class="modal" style="max-width:380px;">
+    <div class="modal-header">
+      <span class="modal-title">Delete Vehicle</span>
+      <button class="modal-close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:14px;color:var(--text-secondary);margin-bottom:6px;">You are about to delete:</p>
+      <p style="font-size:15px;font-weight:700;color:var(--text-primary);" id="deleteVehiclePlate"></p>
+      <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">Owner: <span id="deleteVehicleOwner"></span></p>
+      <p style="font-size:13px;color:var(--danger);background:var(--danger-bg);padding:10px 14px;border-radius:8px;">
+        This action cannot be undone.
+      </p>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-outline" data-close-modal>Cancel</button>
-      <button class="btn btn-primary">Register Vehicle</button>
+      <button class="btn btn-outline btn-sm" data-close-modal>Cancel</button>
+      <button class="btn btn-danger btn-sm" id="confirmDeleteVehicleBtn">Yes, delete vehicle</button>
     </div>
   </div>
 </div>
