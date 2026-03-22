@@ -2,6 +2,37 @@
 
 document.addEventListener('DOMContentLoaded', () => {
 
+  // Load session user into topbar
+fetch('/Admin/backend/auth/session_user.php')
+    .then(res => res.json())
+    .then(data => {
+        if (data.error) {
+            window.location.href = 'http://localhost:8000/Admin/login.html';
+            return;
+        }
+        const nameEl   = document.querySelector('.topbar-user-name');
+        const roleEl   = document.querySelector('.topbar-user-role');
+        const avatarEl = document.querySelector('.topbar-avatar img');
+
+        if (nameEl)   nameEl.textContent = data.firstname + ' ' + data.lastname;
+        if (roleEl)   roleEl.textContent = data.role.charAt(0).toUpperCase() + data.role.slice(1);
+        if (avatarEl) avatarEl.src = `/assets/avatars/avatar-${data.role}.svg`;
+    })
+    .catch(() => {
+        window.location.href = 'http://localhost:8000/Admin/login.html';
+    });
+
+// Logout
+const logoutBtn = document.getElementById('logoutBtn');
+if (logoutBtn) {
+    logoutBtn.addEventListener('click', () => {
+        fetch('/Admin/backend/auth/logout.php')
+            .then(() => {
+                window.location.href = 'http://localhost:8000/Admin/login.html';
+            });
+    });
+}
+
   /* ── SIDEBAR TOGGLE ── */
   const sidebar   = document.getElementById('sidebar');
   const mainArea  = document.getElementById('mainArea');
@@ -128,6 +159,10 @@ document.addEventListener('DOMContentLoaded', () => {
     dateInput.min = today;
   }
 
+<<<<<<< HEAD
+});
+
+=======
   /* ── PASSWORD TOGGLE ── */
   window.togglePw = function(id) {
     const input = document.getElementById(id);
@@ -171,3 +206,4 @@ if (document.getElementById('txnId')) generateReceipt();
 function printReceipt() {
   window.print();
 }
+>>>>>>> 77b71522cb851370495146f0002e23b88bcb0197
