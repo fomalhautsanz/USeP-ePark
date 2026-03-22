@@ -1,0 +1,328 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login — USeP ePark</title>
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --maroon: #7B1C2E;
+    --maroon-dark: #5A1220;
+    --maroon-light: #9E2438;
+    --gold: #C9A84C;
+    --gold-light: #E2C06A;
+    --gold-pale: #F5E9C8;
+    --bg: #F7F4F0;
+    --bg-card: #FFFFFF;
+    --text-primary: #1A1A1A;
+    --text-secondary: #6B6B6B;
+    --text-muted: #A0A0A0;
+    --border: #E8E2D9;
+    --border-strong: #D4C9B8;
+    --shadow-lg: 0 10px 40px rgba(0,0,0,0.14), 0 4px 10px rgba(0,0,0,0.07);
+  }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--maroon-dark);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    -webkit-font-smoothing: antialiased;
+    position: relative;
+    overflow: hidden;
+  }
+  body::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 20% 10%, rgba(201,168,76,0.12) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 80% at 80% 90%, rgba(201,168,76,0.08) 0%, transparent 60%);
+  }
+  .bg-pattern {
+    position: absolute;
+    inset: 0;
+    opacity: 0.04;
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(255,255,255,0.5) 40px, rgba(255,255,255,0.5) 41px),
+      repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(255,255,255,0.5) 40px, rgba(255,255,255,0.5) 41px);
+  }
+  .login-wrap {
+    display: flex;
+    width: 100%;
+    max-width: 900px;
+    min-height: 540px;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    z-index: 1;
+    animation: fadeUp 0.5s cubic-bezier(0.4,0,0.2,1) both;
+  }
+  .login-left {
+    background: var(--maroon);
+    flex: 1;
+    padding: 48px 44px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+  }
+  .login-left::after {
+    content: 'EP';
+    position: absolute;
+    bottom: -30px; right: -20px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 200px;
+    color: rgba(255,255,255,0.04);
+    line-height: 1; letter-spacing: -5px;
+    pointer-events: none;
+  }
+  .login-logo { display: flex; align-items: center; gap: 14px; }
+  .login-headline { position: relative; z-index: 1; }
+  .login-headline h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 52px; color: #fff;
+    line-height: 0.95; letter-spacing: 1px;
+    margin-bottom: 14px;
+  }
+  .login-headline h1 span { color: var(--gold); }
+  .login-headline p { font-size: 13.5px; color: rgba(255,255,255,0.55); line-height: 1.7; max-width: 260px; }
+  .login-stats { display: flex; gap: 28px; position: relative; z-index: 1; }
+  .login-stat-val { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: var(--gold); line-height: 1; }
+  .login-stat-label { font-size: 11px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.8px; margin-top: 2px; }
+
+  .login-right {
+    background: var(--bg-card);
+    width: 380px;
+    flex-shrink: 0;
+    padding: 48px 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .login-right h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 30px; letter-spacing: 1px;
+    color: var(--maroon); margin-bottom: 6px;
+  }
+  .login-right .sub { font-size: 13px; color: var(--text-muted); margin-bottom: 32px; }
+
+  .form-group { margin-bottom: 18px; }
+  .form-label {
+    display: block; font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1px;
+    color: var(--text-secondary); margin-bottom: 7px;
+  }
+  .input-wrap { position: relative; display: flex; align-items: center; }
+  .input-icon { position: absolute; left: 12px; color: var(--text-muted); display: flex; }
+  .input-icon svg { width: 16px; height: 16px; }
+  .form-control {
+    width: 100%;
+    padding: 11px 13px 11px 40px;
+    border: 1.5px solid var(--border-strong);
+    border-radius: 9px; font-size: 13.5px;
+    color: var(--text-primary); background: var(--bg);
+    outline: none; font-family: 'DM Sans', sans-serif;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .form-control:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201,168,76,0.14); background: #fff; }
+  .form-control::placeholder { color: var(--text-muted); }
+  .input-toggle {
+    position: absolute; right: 12px;
+    background: none; border: none; cursor: pointer;
+    color: var(--text-muted); display: flex; padding: 2px;
+  }
+  .input-toggle:hover { color: var(--text-primary); }
+  .input-toggle svg { width: 16px; height: 16px; }
+
+  .form-extras {
+    display: flex; align-items: center;
+    justify-content: space-between; margin-bottom: 24px;
+  }
+  .checkbox-label { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-secondary); cursor: pointer; }
+  .checkbox-label input[type=checkbox] { accent-color: var(--maroon); width: 14px; height: 14px; }
+  .forgot-link { font-size: 13px; color: var(--maroon); font-weight: 500; text-decoration: none; }
+  .forgot-link:hover { color: var(--maroon-light); text-decoration: underline; }
+
+  .btn-login {
+    width: 100%; padding: 13px;
+    background: var(--maroon); color: #fff;
+    border: none; border-radius: 9px;
+    font-size: 14px; font-weight: 700;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer; letter-spacing: 0.5px;
+    transition: background 0.2s, transform 0.15s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .btn-login:hover { background: var(--maroon-dark); }
+  .btn-login:active { transform: scale(0.99); }
+  .btn-login svg { width: 16px; height: 16px; }
+
+  /* ── REGISTER LINK ── */
+  .register-link {
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 16px;
+  }
+  .register-link a { color: var(--maroon); font-weight: 600; text-decoration: none; }
+  .register-link a:hover { color: var(--maroon-light); text-decoration: underline; }
+
+  .error-msg {
+    background: #FDEDEC;
+    border: 1px solid #f5c6cb;
+    color: #C0392B;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 12.5px;
+    margin-bottom: 18px;
+    display: none;
+    align-items: center;
+    gap: 8px;
+  }
+  .error-msg svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+  .login-footer { text-align: center; font-size: 11.5px; color: var(--text-muted); margin-top: 24px; }
+  .login-footer a { color: var(--maroon); font-weight: 500; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @media (max-width: 700px) {
+    .login-left { display: none; }
+    .login-right { width: 100%; border-radius: 20px; }
+    .login-wrap { max-width: 400px; }
+  }
+</style>
+</head>
+<body>
+<div class="bg-pattern"></div>
+<div class="login-wrap">
+
+  <!-- ── LEFT PANEL ── -->
+  <div class="login-left">
+    <div class="login-logo">
+      <img src="../assets/logo-icon.svg" alt="ePark" style="width:44px;height:44px;border-radius:10px;object-fit:cover;">
+      <div>
+        <img src="../assets/logo-white.svg" alt="ePark" style="height:38px;object-fit:contain;object-position:left;display:block;">
+      </div>
+    </div>
+    <div class="login-headline">
+      <h1>Smart<br><span>Parking</span><br>Control</h1>
+      <p>QR-based parking management system for USeP Tagum Campus. Real-time monitoring, reservations, and automated entry tracking.</p>
+    </div>
+    <div class="login-stats">
+      <div>
+        <div class="login-stat-val">50</div>
+        <div class="login-stat-label">Total Slots</div>
+      </div>
+      <div>
+        <div class="login-stat-val">24/7</div>
+        <div class="login-stat-label">Monitoring</div>
+      </div>
+      <div>
+        <div class="login-stat-val">QR</div>
+        <div class="login-stat-label">Entry System</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── RIGHT PANEL ── -->
+  <div class="login-right">
+    <h2>Login</h2>
+    <p class="sub">Sign in to access your account</p>
+
+    <div class="error-msg" id="errorMsg">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <span id="errorText">Invalid username or password.</span>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Username</label>
+      <div class="input-wrap">
+        <span class="input-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </span>
+        <input type="text" class="form-control" id="username" placeholder="Enter your username">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <div class="input-wrap">
+        <span class="input-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </span>
+        <input type="password" class="form-control" id="password" placeholder="Enter your password">
+        <button class="input-toggle" id="togglePw" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="form-extras">
+      <label class="checkbox-label">
+        <input type="checkbox" id="remember"> Remember me
+      </label>
+      <a class="forgot-link" href="#">Forgot password?</a>
+    </div>
+
+    <button class="btn-login" id="loginBtn" onclick="handleLogin()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+      Sign In
+    </button>
+
+    <!-- ── REGISTER LINK — users only ── -->
+    <div class="register-link">
+      Don't have an account? <a href="register.html">Register here</a>
+    </div>
+
+    <div class="login-footer">
+      University of Southeastern Philippines &mdash; Tagum Campus<br>
+      <a href="#">USeP ePark System v1.0</a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  document.getElementById('togglePw').addEventListener('click', function() {
+    const pw = document.getElementById('password');
+    pw.type = pw.type === 'password' ? 'text' : 'password';
+  });
+
+  function handleLogin() {
+    const u   = document.getElementById('username').value.trim();
+    const p   = document.getElementById('password').value;
+    const err = document.getElementById('errorMsg');
+    const errText = document.getElementById('errorText');
+
+    if (!u || !p) {
+      errText.textContent = 'Please enter your username and password.';
+      err.style.display = 'flex';
+      return;
+    }
+
+    err.style.display = 'none';
+
+    // TODO: replace with real backend auth
+    // role = 'customer' → redirect to userDashboard.html
+    window.location.href = 'userDashboard.html';
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter') handleLogin();
+  });
+</script>
+</body>
+</html>
