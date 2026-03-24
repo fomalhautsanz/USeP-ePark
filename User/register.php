@@ -1,4 +1,10 @@
-
+<?php
+session_start();
+if (isset($_SESSION['user_id'])) {
+    header('Location: userDashboard.php');
+    exit;
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -30,33 +36,29 @@
     --danger-bg: #FDEDEC;
     --shadow-lg: 0 10px 40px rgba(0,0,0,0.14), 0 4px 10px rgba(0,0,0,0.07);
   }
-
-  /* ── FIX: body scrolls, not hidden ── */
   body {
     font-family: 'DM Sans', sans-serif;
     background: var(--maroon-dark);
     min-height: 100vh;
     display: flex;
-    align-items: flex-start;        /* changed from center */
+    align-items: flex-start;
     justify-content: center;
     padding: 24px;
     -webkit-font-smoothing: antialiased;
     position: relative;
-    overflow: auto;                 /* changed from hidden */
+    overflow: auto;
   }
-
   body::before {
     content: '';
-    position: fixed;               /* fixed so bg stays while scrolling */
+    position: fixed;
     inset: 0;
     background:
       radial-gradient(ellipse 80% 60% at 20% 10%, rgba(201,168,76,0.12) 0%, transparent 60%),
       radial-gradient(ellipse 60% 80% at 80% 90%, rgba(201,168,76,0.08) 0%, transparent 60%);
     pointer-events: none;
   }
-
   .bg-pattern {
-    position: fixed;               /* fixed so bg stays while scrolling */
+    position: fixed;
     inset: 0;
     opacity: 0.04;
     background-image:
@@ -64,8 +66,6 @@
       repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(255,255,255,0.5) 40px, rgba(255,255,255,0.5) 41px);
     pointer-events: none;
   }
-
-  /* ── WRAP ── */
   .register-wrap {
     display: flex;
     width: 100%;
@@ -76,11 +76,9 @@
     position: relative;
     z-index: 1;
     animation: fadeUp 0.5s cubic-bezier(0.4,0,0.2,1) both;
-    align-self: flex-start;        /* prevents vertical stretching */
+    align-self: flex-start;
     margin: auto;
   }
-
-  /* ── LEFT PANEL ── */
   .register-left {
     background: var(--maroon);
     width: 300px;
@@ -129,15 +127,13 @@
   }
   .step-text { font-size: 12px; color: rgba(255,255,255,0.55); line-height: 1.4; }
   .step-text strong { color: rgba(255,255,255,0.85); display: block; font-size: 13px; }
-
-  /* ── RIGHT PANEL ── */
   .register-right {
     background: var(--bg-card);
     flex: 1;
     padding: 40px 44px;
     display: flex;
     flex-direction: column;
-    overflow-y: visible;            /* body handles scroll, not this panel */
+    overflow-y: visible;
   }
   .register-right h2 {
     font-family: 'Bebas Neue', sans-serif;
@@ -145,8 +141,6 @@
     color: var(--maroon); margin-bottom: 4px;
   }
   .register-right .sub { font-size: 13px; color: var(--text-muted); margin-bottom: 28px; }
-
-  /* ── SECTION LABEL ── */
   .section-label {
     font-size: 10px; font-weight: 700;
     text-transform: uppercase; letter-spacing: 1.2px;
@@ -157,8 +151,6 @@
   }
   .section-label svg { width: 13px; height: 13px; }
   .section-label:first-of-type { margin-top: 0; }
-
-  /* ── FORM GRID ── */
   .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
   .form-row.single { grid-template-columns: 1fr; }
   .form-group { display: flex; flex-direction: column; gap: 6px; }
@@ -190,17 +182,12 @@
   .input-toggle svg { width: 15px; height: 15px; }
   .field-hint { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
   .field-error { font-size: 11px; color: var(--danger); margin-top: 2px; display: none; }
-
-  /* ── ALERT MSGS ── */
   .alert-msg {
     border-radius: 8px; padding: 10px 14px; font-size: 12.5px;
     margin-bottom: 18px; display: none; align-items: center; gap: 8px;
   }
   .alert-msg svg { width: 14px; height: 14px; flex-shrink: 0; }
   .alert-msg.error { background: var(--danger-bg); border: 1px solid #f5c6cb; color: var(--danger); }
-  .alert-msg.success { background: var(--success-bg); border: 1px solid #b7dfca; color: var(--success); }
-
-  /* ── SUBMIT BUTTON ── */
   .btn-register {
     width: 100%; padding: 13px; background: var(--maroon); color: #fff;
     border: none; border-radius: 9px; font-size: 14px; font-weight: 700;
@@ -212,14 +199,105 @@
   .btn-register:hover { background: var(--maroon-dark); }
   .btn-register:active { transform: scale(0.99); }
   .btn-register svg { width: 16px; height: 16px; }
-
-  /* ── LOGIN LINK ── */
   .login-link { text-align: center; font-size: 13px; color: var(--text-muted); margin-top: 16px; }
   .login-link a { color: var(--maroon); font-weight: 600; text-decoration: none; }
   .login-link a:hover { color: var(--maroon-light); text-decoration: underline; }
   .register-footer { text-align: center; font-size: 11.5px; color: var(--text-muted); margin-top: 20px; padding-bottom: 8px; }
   .register-footer a { color: var(--maroon); font-weight: 500; }
 
+  /* ── TOAST POPUP ── */
+  .toast-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(4px);
+    z-index: 999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+  }
+  .toast-overlay.show {
+    display: flex;
+    animation: fadeIn 0.3s ease;
+  }
+  .toast-popup {
+    background: #fff;
+    border-radius: 20px;
+    padding: 40px 44px;
+    text-align: center;
+    max-width: 380px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    position: relative;
+    overflow: hidden;
+    animation: popUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .toast-icon {
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    background: var(--success-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+  }
+  .toast-icon svg {
+    width: 36px; height: 36px;
+    color: var(--success);
+  }
+  .toast-popup h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 1px;
+    color: var(--maroon);
+    margin-bottom: 10px;
+  }
+  .toast-popup p {
+    font-size: 13.5px;
+    color: var(--text-muted);
+    line-height: 1.7;
+    margin-bottom: 4px;
+  }
+  .toast-redirect {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  .toast-redirect svg {
+    width: 12px; height: 12px;
+    animation: spin 1s linear infinite;
+  }
+  .toast-progress {
+    position: absolute;
+    bottom: 0; left: 0;
+    height: 5px;
+    width: 100%;
+    background: var(--success);
+    border-radius: 0 0 20px 20px;
+    animation: progress 2s linear forwards;
+    transform-origin: left;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  @keyframes popUp {
+    from { opacity: 0; transform: scale(0.8) translateY(20px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  @keyframes progress {
+    from { width: 100%; }
+    to   { width: 0%; }
+  }
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(20px); }
     to   { opacity: 1; transform: translateY(0); }
@@ -234,6 +312,23 @@
 </head>
 <body>
 <div class="bg-pattern"></div>
+
+<!-- ── TOAST POPUP ── -->
+<div class="toast-overlay" id="toastOverlay">
+  <div class="toast-popup">
+    <div class="toast-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+    </div>
+    <h3>Account Created!</h3>
+    <p>Your account has been successfully registered.</p>
+    <div class="toast-redirect">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+      Redirecting to login...
+    </div>
+    <div class="toast-progress"></div>
+  </div>
+</div>
+
 <div class="register-wrap">
 
   <!-- ── LEFT PANEL ── -->
@@ -270,10 +365,6 @@
     <div class="alert-msg error" id="errorMsg">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
       <span id="errorText">Please fill in all required fields.</span>
-    </div>
-    <div class="alert-msg success" id="successMsg">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-      <span>Account created! Redirecting to login...</span>
     </div>
 
     <!-- SECTION 1 -->
@@ -397,8 +488,9 @@
     </button>
 
     <div class="login-link">
-      Already have an account? <a href="login.html">Sign in here</a>
+      Already have an account? <a href="../Admin/login.html">Sign in here</a>
     </div>
+
     <div class="register-footer">
       University of Southeastern Philippines &mdash; Tagum Campus<br>
       <a href="#">USeP ePark System v1.0</a>
@@ -457,10 +549,8 @@
   }
 
   function handleRegister() {
-    const errorMsg   = document.getElementById('errorMsg');
-    const successMsg = document.getElementById('successMsg');
-    errorMsg.style.display   = 'none';
-    successMsg.style.display = 'none';
+    const errorMsg = document.getElementById('errorMsg');
+    errorMsg.style.display = 'none';
 
     if (!validate()) {
       errorMsg.style.display = 'flex';
@@ -468,24 +558,35 @@
       return;
     }
 
-    // TODO: send to backend PHP/API
-    // users table   → firstname, lastname, email, contact_number, password_hash, role='customer'
-    // vehicle table → plate_number, vehicle_type, user_id
-    const payload = {
-      firstname:      document.getElementById('firstname').value.trim(),
-      lastname:       document.getElementById('lastname').value.trim(),
-      email:          document.getElementById('email').value.trim(),
-      contact_number: document.getElementById('contact_number').value.trim(),
-      username:       document.getElementById('username').value.trim(),
-      password:       document.getElementById('password').value,
-      plate_number:   document.getElementById('plate_number').value.trim().toUpperCase(),
-      vehicle_type:   document.getElementById('vehicle_type').value,
-      role:           'customer'
-    };
+    const formData = new FormData();
+    formData.append('firstname',      document.getElementById('firstname').value.trim());
+    formData.append('lastname',       document.getElementById('lastname').value.trim());
+    formData.append('email',          document.getElementById('email').value.trim());
+    formData.append('contact_number', document.getElementById('contact_number').value.trim());
+    formData.append('username',       document.getElementById('username').value.trim());
+    formData.append('password',       document.getElementById('password').value);
+    formData.append('plate_number',   document.getElementById('plate_number').value.trim().toUpperCase());
+    formData.append('vehicle_type',   document.getElementById('vehicle_type').value);
 
-    console.log('Register payload:', payload);
-    successMsg.style.display = 'flex';
-    setTimeout(() => { window.location.href = 'login.html'; }, 2000);
+    fetch('../Admin/backend/auth/register.php', {
+      method: 'POST',
+      body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        // ── Show toast popup ──
+        document.getElementById('toastOverlay').classList.add('show');
+        setTimeout(() => { window.location.href = data.redirect; }, 2000);
+      } else {
+        errorMsg.style.display = 'flex';
+        document.getElementById('errorText').textContent = data.message;
+      }
+    })
+    .catch(() => {
+      errorMsg.style.display = 'flex';
+      document.getElementById('errorText').textContent = 'Server error. Please try again.';
+    });
   }
 
   document.addEventListener('keydown', e => {
