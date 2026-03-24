@@ -1,7 +1,7 @@
 <?php
 session_start();
 if (!isset($_SESSION['user_id'])) {
-    header('Location: http://localhost:8000/Admin/login.html');
+    header('Location: http://localhost:8000/Login/login.html');
     exit;
 }
 if ($_SESSION['role'] === 'customer') {

@@ -149,7 +149,7 @@ Open the project folder using Visual Studio Code.
 
 Open the desired page in your browser:
 
-* Admin → admin/login.html
+* Admin → Login/login.html
 * User → user/index.html
 
 ---

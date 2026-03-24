@@ -3,11 +3,11 @@
 document.addEventListener('DOMContentLoaded', () => {
 
   // Load session user into topbar
-fetch('/Admin/backend/auth/session_user.php')
+fetch('/Login/backend/auth/session_user.php')
     .then(res => res.json())
     .then(data => {
         if (data.error) {
-            window.location.href = 'http://localhost:8000/Admin/login.html';
+            window.location.href = 'http://localhost:8000/Login/login.html';
             return;
         }
         const nameEl   = document.querySelector('.topbar-user-name');
@@ -19,16 +19,16 @@ fetch('/Admin/backend/auth/session_user.php')
         if (avatarEl) avatarEl.src = `/assets/avatars/avatar-${data.role}.svg`;
     })
     .catch(() => {
-        window.location.href = 'http://localhost:8000/Admin/login.html';
+        window.location.href = 'http://localhost:8000/Login/login.html';
     });
 
 // Logout
 const logoutBtn = document.getElementById('logoutBtn');
 if (logoutBtn) {
     logoutBtn.addEventListener('click', () => {
-        fetch('/Admin/backend/auth/logout.php')
+        fetch('/Login/backend/auth/logout.php')
             .then(() => {
-                window.location.href = 'http://localhost:8000/Admin/login.html';
+                window.location.href = 'http://localhost:8000/Login/login.html';
             });
     });
 }
@@ -159,10 +159,6 @@ if (logoutBtn) {
     dateInput.min = today;
   }
 
-<<<<<<< HEAD
-});
-
-=======
   /* ── PASSWORD TOGGLE ── */
   window.togglePw = function(id) {
     const input = document.getElementById(id);
@@ -206,4 +202,3 @@ if (document.getElementById('txnId')) generateReceipt();
 function printReceipt() {
   window.print();
 }
->>>>>>> 77b71522cb851370495146f0002e23b88bcb0197

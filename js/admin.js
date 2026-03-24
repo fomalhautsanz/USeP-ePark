@@ -501,11 +501,11 @@ function openSuspendModal(user) {
 }
 
 function loadSessionUser() {
-    fetch("backend/auth/session_user.php")
+    fetch("/Login/backend/auth/session_user.php")
         .then(res => res.json())
         .then(data => {
             if (data.error) {
-                window.location.href = "http://localhost:8000/Admin/login.html";
+                window.location.href = "http://localhost:8000/Login/login.html";
                 return;
             }
             const nameEl   = document.querySelector(".topbar-user-name");
@@ -517,7 +517,7 @@ function loadSessionUser() {
             if (avatarEl) avatarEl.src = `../assets/avatars/avatar-${data.role}.svg`;
         })
         .catch(() => {
-            window.location.href = "http://localhost:8000/Admin/login.html";
+            window.location.href = "http://localhost:8000/Login/login.html";
         });
 }
 
@@ -526,12 +526,12 @@ function initLogout() {
     if (!logoutBtn) return;
 
     logoutBtn.addEventListener("click", () => {
-        fetch("backend/auth/logout.php")
+        fetch("/Login/backend/auth/logout.php")
             .then(() => {
-                window.location.href = "../login/login.html";
+                window.location.href = "http://localhost:8000/Login/login.html";
             })
             .catch(() => {
-                window.location.href = "../login/login.html";
+                window.location.href = "http://localhost:8000/Login/login.html";
             });
     });
 }
