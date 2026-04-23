@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ePark Guard – Status</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --maroon: #6B0F1A;
+      --maroon-light: #8B1A28;
+      --gold: #B8962E;
+      --cream-input: #F0E8D8;
+      --bg: #F2EDE3;
+      --text-dark: #2C1810;
+      --text-muted: #7A6A5A;
+      --white: #FFFFFF;
+    }
+
+    body {
+      min-height: 100vh;
+      background: var(--bg);
+      font-family: 'Barlow', sans-serif;
+      color: var(--text-dark);
+      display: flex; flex-direction: column;
+    }
+
+    .header {
+      background: var(--maroon);
+      padding: 0 1.5rem;
+      height: 64px;
+      display: flex; align-items: center; gap: 1rem;
+      flex-shrink: 0;
+    }
+    .back-btn {
+      background: rgba(255,255,255,0.1); border: none; cursor: pointer;
+      border-radius: 8px; padding: 8px; color: white;
+      display: flex; align-items: center; transition: background 0.2s;
+    }
+    .back-btn:hover { background: rgba(255,255,255,0.2); }
+    .back-btn svg { width: 18px; height: 18px; }
+    .header-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 1.1rem; font-weight: 700;
+      color: white; letter-spacing: 2px; text-transform: uppercase;
+      flex: 1;
+    }
+    .header-count {
+      background: var(--gold);
+      color: var(--maroon);
+      font-size: 0.72rem; font-weight: 700;
+      padding: 4px 10px; border-radius: 20px;
+      letter-spacing: 1px;
+    }
+
+    .content {
+      flex: 1;
+      padding: 1.5rem;
+      max-width: 560px; width: 100%; margin: 0 auto;
+    }
+
+    /* SEARCH */
+    .search-wrap {
+      position: relative; margin-bottom: 1.25rem;
+    }
+    .search-wrap svg {
+      position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+      width: 16px; height: 16px; color: var(--text-muted);
+    }
+    .search-input {
+      width: 100%;
+      background: var(--white);
+      border: none; border-radius: 10px;
+      padding: 12px 14px 12px 40px;
+      font-family: 'Barlow', sans-serif;
+      font-size: 0.9rem; color: var(--text-dark);
+      outline: none;
+      transition: box-shadow 0.2s;
+    }
+    .search-input:focus { box-shadow: 0 0 0 2px var(--gold); }
+    .search-input::placeholder { color: #B8A898; }
+
+    /* VEHICLE CARD */
+    .vehicle-card {
+      background: var(--white);
+      border-radius: 14px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 0.75rem;
+      display: flex; align-items: center; gap: 1rem;
+    }
+
+    .vehicle-icon {
+      width: 44px; height: 44px; border-radius: 10px;
+      background: var(--cream-input);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .vehicle-icon svg { width: 22px; height: 22px; color: var(--gold); }
+
+    .vehicle-info { flex: 1; min-width: 0; }
+    .vehicle-plate {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 1.15rem; font-weight: 700;
+      letter-spacing: 2px; text-transform: uppercase;
+      color: var(--text-dark);
+    }
+    .vehicle-owner {
+      font-size: 0.8rem; color: var(--text-muted);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+
+    .vehicle-meta { text-align: right; flex-shrink: 0; }
+    .vehicle-time {
+      font-size: 0.78rem; font-weight: 600; color: var(--maroon);
+    }
+    .vehicle-slot {
+      font-size: 0.7rem; color: var(--text-muted); margin-top: 2px;
+    }
+    .vehicle-duration {
+      font-size: 0.68rem; background: #E8F5E9;
+      color: #2E7D32; padding: 2px 8px; border-radius: 20px;
+      font-weight: 600; margin-top: 4px; display: inline-block;
+    }
+
+    /* STATES */
+    .loading-state, .empty-state {
+      text-align: center; padding: 3rem 1rem;
+    }
+    .loading-state svg { animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .empty-state-icon {
+      width: 64px; height: 64px;
+      background: var(--cream-input);
+      border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1rem;
+    }
+    .empty-state-icon svg { width: 28px; height: 28px; color: var(--text-muted); }
+    .empty-state h3 {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 1.2rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 1px;
+      color: var(--text-dark); margin-bottom: 0.4rem;
+    }
+    .empty-state p { font-size: 0.82rem; color: var(--text-muted); }
+
+    /* BOTTOM NAV */
+    .bottom-nav {
+      background: var(--maroon); height: 64px;
+      display: flex; align-items: center; justify-content: space-around;
+      flex-shrink: 0;
+    }
+    .nav-item {
+      display: flex; flex-direction: column;
+      align-items: center; gap: 3px;
+      color: rgba(255,255,255,0.45); cursor: pointer;
+      text-decoration: none; padding: 4px 16px;
+      transition: color 0.2s;
+    }
+    .nav-item.active { color: var(--gold); }
+    .nav-item svg { width: 20px; height: 20px; }
+    .nav-item span { font-size: 0.6rem; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 600; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <button class="back-btn" onclick="window.location.href='guard-home.html'">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <div class="header-title">Vehicles Inside</div>
+    <div class="header-count" id="headerCount">0</div>
+  </div>
+
+  <div class="content">
+
+    <div class="search-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input class="search-input" id="searchInput" type="text" placeholder="Search by plate or owner..." oninput="filterVehicles()" />
+    </div>
+
+    <div id="vehicleList"></div>
+
+  </div>
+
+  <div class="bottom-nav">
+    <a class="nav-item" href="guard-home.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span>Home</span>
+    </a>
+    <a class="nav-item" href="guard-scan.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="5" height="5" rx="1"/><rect x="16" y="3" width="5" height="5" rx="1"/><rect x="3" y="16" width="5" height="5" rx="1"/><path d="M21 16h-3v3"/><path d="M21 21v.01"/></svg>
+      <span>Scan</span>
+    </a>
+    <a class="nav-item active" href="guard-status.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+      <span>List</span>
+    </a>
+    <a class="nav-item" href="guard-home.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      <span>Account</span>
+    </a>
+  </div>
+
+  <script>
+    if (!sessionStorage.getItem('guard_name')) window.location.href = 'guard-login.html';
+
+    let allVehicles = [];
+
+    function getDuration(entryTime) {
+      const entry = new Date(entryTime);
+      const now   = new Date();
+      const diff  = Math.floor((now - entry) / 60000);
+      if (diff < 60)   return diff + 'm';
+      const h = Math.floor(diff / 60);
+      const m = diff % 60;
+      return h + 'h ' + m + 'm';
+    }
+
+    function renderVehicles(list) {
+      const el = document.getElementById('vehicleList');
+      if (list.length === 0) {
+        el.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M3 9a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9z"/>
+                <path d="M8 9V7a4 4 0 0 1 8 0v2"/>
+              </svg>
+            </div>
+            <h3>No Vehicles Inside</h3>
+            <p>Parked vehicles will appear here after QR scan.</p>
+          </div>`;
+        return;
+      }
+      el.innerHTML = list.map(v => `
+        <div class="vehicle-card">
+          <div class="vehicle-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M5 17H3a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1l2-4h10l2 4h1a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-2"/>
+              <circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/>
+            </svg>
+          </div>
+          <div class="vehicle-info">
+            <div class="vehicle-plate">${v.plate_number}</div>
+            <div class="vehicle-owner">${v.owner_name} · ${v.vehicle_type}</div>
+          </div>
+          <div class="vehicle-meta">
+            <div class="vehicle-time">${v.entry_time_formatted || v.entry_time}</div>
+            <div class="vehicle-slot">Slot ${v.slot_number || '–'}</div>
+            <div class="vehicle-duration">${getDuration(v.entry_time)}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function filterVehicles() {
+      const q = document.getElementById('searchInput').value.toLowerCase();
+      const filtered = q
+        ? allVehicles.filter(v =>
+            v.plate_number.toLowerCase().includes(q) ||
+            v.owner_name.toLowerCase().includes(q))
+        : allVehicles;
+      renderVehicles(filtered);
+    }
+
+    async function loadVehicles() {
+      const el = document.getElementById('vehicleList');
+      el.innerHTML = `
+        <div class="loading-state">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#B8962E" stroke-width="2">
+            <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+          </svg>
+        </div>`;
+      try {
+        const res = await fetch('backend/guard-status.php');
+        const data = await res.json();
+        allVehicles = data.vehicles || [];
+        document.getElementById('headerCount').textContent = allVehicles.length;
+        renderVehicles(allVehicles);
+      } catch (e) {
+        el.innerHTML = `<div class="empty-state"><p>Could not load vehicle data.</p></div>`;
+      }
+    }
+
+    loadVehicles();
+    // Auto-refresh every 30 seconds
+    setInterval(loadVehicles, 30000);
+  </script>
+</body>
+</html>

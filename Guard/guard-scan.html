@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ePark Guard – Scan QR</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --maroon: #6B0F1A;
+      --maroon-dark: #4A0A12;
+      --maroon-light: #8B1A28;
+      --gold: #B8962E;
+      --cream-input: #F0E8D8;
+      --bg: #F2EDE3;
+      --text-dark: #2C1810;
+      --text-muted: #7A6A5A;
+      --white: #FFFFFF;
+    }
+
+    body {
+      min-height: 100vh;
+      background: var(--bg);
+      font-family: 'Barlow', sans-serif;
+      color: var(--text-dark);
+      display: flex; flex-direction: column;
+    }
+
+    /* HEADER */
+    .header {
+      background: var(--maroon);
+      padding: 0 1.5rem;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-shrink: 0;
+    }
+    .back-btn {
+      background: rgba(255,255,255,0.1);
+      border: none; cursor: pointer;
+      border-radius: 8px; padding: 8px;
+      color: white; display: flex; align-items: center;
+      transition: background 0.2s;
+    }
+    .back-btn:hover { background: rgba(255,255,255,0.2); }
+    .back-btn svg { width: 18px; height: 18px; }
+
+    .header-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 1.1rem; font-weight: 700;
+      color: var(--white); letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    /* CONTENT */
+    .content {
+      flex: 1;
+      padding: 1.75rem 1.5rem;
+      max-width: 560px; width: 100%; margin: 0 auto;
+      display: flex; flex-direction: column; gap: 1.25rem;
+    }
+
+    /* SCANNER BOX */
+    .scanner-wrap {
+      position: relative;
+      background: #000;
+      border-radius: 18px;
+      overflow: hidden;
+      aspect-ratio: 1;
+      width: 100%;
+      max-width: 360px;
+      margin: 0 auto;
+    }
+
+    #video {
+      width: 100%; height: 100%;
+      object-fit: cover; display: block;
+    }
+
+    .scan-overlay {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      pointer-events: none;
+    }
+
+    .scan-frame {
+      width: 60%; aspect-ratio: 1;
+      border: 2.5px solid var(--gold);
+      border-radius: 12px;
+      position: relative;
+    }
+    .scan-frame::before, .scan-frame::after,
+    .scan-frame span::before, .scan-frame span::after {
+      content: '';
+      position: absolute;
+      width: 20px; height: 20px;
+      border-color: var(--gold); border-style: solid;
+    }
+    .scan-frame::before { top: -2px; left: -2px; border-width: 3px 0 0 3px; border-radius: 4px 0 0 0; }
+    .scan-frame::after  { top: -2px; right: -2px; border-width: 3px 3px 0 0; border-radius: 0 4px 0 0; }
+    .scan-frame span::before { bottom: -2px; left: -2px; border-width: 0 0 3px 3px; border-radius: 0 0 0 4px; }
+    .scan-frame span::after  { bottom: -2px; right: -2px; border-width: 0 3px 3px 0; border-radius: 0 0 4px 0; }
+
+    .scan-line {
+      position: absolute; left: 10%; right: 10%;
+      height: 2px; background: var(--gold);
+      top: 10%; animation: scanline 2s ease-in-out infinite;
+      border-radius: 2px; opacity: 0.8;
+    }
+    @keyframes scanline {
+      0%   { top: 10%; opacity: 1; }
+      50%  { top: 85%; opacity: 0.6; }
+      100% { top: 10%; opacity: 1; }
+    }
+
+    .scanner-hint {
+      text-align: center;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+    }
+
+    /* RESULT CARD */
+    .result-card {
+      background: var(--white);
+      border-radius: 14px;
+      padding: 1.25rem 1.5rem;
+      display: none;
+    }
+    .result-card.show { display: block; }
+
+    .result-header {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 1rem;
+    }
+    .result-badge {
+      width: 42px; height: 42px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .result-badge.entry { background: #E8F5E9; }
+    .result-badge.exit  { background: #FFF3E0; }
+    .result-badge.error { background: #FDECEA; }
+
+    .result-badge svg { width: 20px; height: 20px; }
+
+    .result-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 1.3rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 1px;
+    }
+    .result-title.entry { color: #2E7D32; }
+    .result-title.exit  { color: #E65100; }
+    .result-title.error { color: #C62828; }
+
+    .result-sub { font-size: 0.78rem; color: var(--text-muted); }
+
+    .result-row {
+      display: flex; justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 0.5px solid #F0E8D8;
+      font-size: 0.85rem;
+    }
+    .result-row:last-of-type { border-bottom: none; }
+    .result-row .rlabel { color: var(--text-muted); }
+    .result-row .rvalue { font-weight: 600; color: var(--text-dark); }
+
+    .btn-rescan {
+      margin-top: 1rem;
+      width: 100%;
+      background: var(--maroon);
+      color: var(--white);
+      border: none; border-radius: 10px;
+      padding: 13px;
+      font-family: 'Barlow', sans-serif;
+      font-size: 0.9rem; font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-rescan:hover { background: var(--maroon-light); }
+
+    /* LOADING OVERLAY */
+    .loading-overlay {
+      display: none;
+      position: absolute; inset: 0;
+      background: rgba(0,0,0,0.6);
+      align-items: center; justify-content: center;
+      border-radius: 18px;
+    }
+    .loading-overlay.show { display: flex; }
+    .loading-spinner {
+      width: 40px; height: 40px;
+      border: 3px solid rgba(255,255,255,0.3);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* BOTTOM NAV */
+    .bottom-nav {
+      background: var(--maroon);
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      flex-shrink: 0;
+    }
+    .nav-item {
+      display: flex; flex-direction: column;
+      align-items: center; gap: 3px;
+      color: rgba(255,255,255,0.45);
+      cursor: pointer;
+      transition: color 0.2s;
+      text-decoration: none;
+      padding: 4px 16px;
+    }
+    .nav-item.active { color: var(--gold); }
+    .nav-item svg { width: 20px; height: 20px; }
+    .nav-item span { font-size: 0.6rem; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 600; }
+
+    canvas { display: none; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <button class="back-btn" onclick="window.location.href='guard-home.html'">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <div class="header-title">Scan QR Code</div>
+  </div>
+
+  <div class="content">
+
+    <div class="scanner-wrap" id="scannerWrap">
+      <video id="video" autoplay playsinline muted></video>
+      <div class="scan-overlay">
+        <div class="scan-frame">
+          <span></span>
+          <div class="scan-line"></div>
+        </div>
+      </div>
+      <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+      </div>
+    </div>
+
+    <canvas id="canvas"></canvas>
+
+    <p class="scanner-hint">Point camera at the vehicle's QR code</p>
+
+    <!-- RESULT -->
+    <div class="result-card" id="resultCard">
+      <div class="result-header">
+        <div class="result-badge" id="resultBadge">
+          <svg id="resultIcon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></svg>
+        </div>
+        <div>
+          <div class="result-title" id="resultTitle"></div>
+          <div class="result-sub" id="resultSub"></div>
+        </div>
+      </div>
+
+      <div class="result-row">
+        <span class="rlabel">Vehicle</span>
+        <span class="rvalue" id="rVehicle">–</span>
+      </div>
+      <div class="result-row">
+        <span class="rlabel">Plate Number</span>
+        <span class="rvalue" id="rPlate">–</span>
+      </div>
+      <div class="result-row">
+        <span class="rlabel">Owner</span>
+        <span class="rvalue" id="rOwner">–</span>
+      </div>
+      <div class="result-row">
+        <span class="rlabel">Time</span>
+        <span class="rvalue" id="rTime">–</span>
+      </div>
+      <div class="result-row" id="rowSlot" style="display:none">
+        <span class="rlabel">Slot</span>
+        <span class="rvalue" id="rSlot">–</span>
+      </div>
+
+      <button class="btn-rescan" onclick="rescan()">Scan Another</button>
+    </div>
+
+  </div>
+
+  <div class="bottom-nav">
+    <a class="nav-item" href="guard-home.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span>Home</span>
+    </a>
+    <a class="nav-item active" href="guard-scan.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="5" height="5" rx="1"/><rect x="16" y="3" width="5" height="5" rx="1"/><rect x="3" y="16" width="5" height="5" rx="1"/><path d="M21 16h-3v3"/><path d="M21 21v.01"/></svg>
+      <span>Scan</span>
+    </a>
+    <a class="nav-item" href="guard-status.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+      <span>List</span>
+    </a>
+    <a class="nav-item" href="guard-home.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      <span>Account</span>
+    </a>
+  </div>
+
+  <!-- jsQR library for QR code scanning -->
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+
+  <script>
+    // Auth guard
+    if (!sessionStorage.getItem('guard_name')) {
+      window.location.href = 'guard-login.html';
+    }
+
+    const video   = document.getElementById('video');
+    const canvas  = document.getElementById('canvas');
+    const ctx     = canvas.getContext('2d');
+    let scanning  = true;
+    let stream    = null;
+
+    // Start camera
+    async function startCamera() {
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'environment', width: { ideal: 640 }, height: { ideal: 640 } }
+        });
+        video.srcObject = stream;
+        video.play();
+        requestAnimationFrame(tick);
+      } catch (e) {
+        document.querySelector('.scanner-hint').textContent = 'Camera access denied. Please allow camera permissions.';
+      }
+    }
+
+    function tick() {
+      if (!scanning) return;
+      if (video.readyState === video.HAVE_ENOUGH_DATA) {
+        canvas.width  = video.videoWidth;
+        canvas.height = video.videoHeight;
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const qr = jsQR(imgData.data, imgData.width, imgData.height, { inversionAttempts: 'dontInvert' });
+        if (qr && qr.data) {
+          scanning = false;
+          handleQR(qr.data);
+          return;
+        }
+      }
+      requestAnimationFrame(tick);
+    }
+
+    async function handleQR(qrData) {
+      document.getElementById('loadingOverlay').classList.add('show');
+      try {
+        const res = await fetch('backend/guard-scan.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            qr_data: qrData,
+            guard_id: sessionStorage.getItem('guard_id')
+          })
+        });
+        const data = await res.json();
+        showResult(data);
+      } catch (e) {
+        showResult({ success: false, action: 'error', message: 'Server error. Please try again.' });
+      } finally {
+        document.getElementById('loadingOverlay').classList.remove('show');
+      }
+    }
+
+    function showResult(data) {
+      const card   = document.getElementById('resultCard');
+      const badge  = document.getElementById('resultBadge');
+      const title  = document.getElementById('resultTitle');
+      const sub    = document.getElementById('resultSub');
+      const icon   = document.getElementById('resultIcon');
+
+      document.getElementById('rVehicle').textContent = data.vehicle_type  || '–';
+      document.getElementById('rPlate').textContent   = data.plate_number  || '–';
+      document.getElementById('rOwner').textContent   = data.owner_name    || '–';
+      document.getElementById('rTime').textContent    = data.timestamp     || new Date().toLocaleTimeString();
+
+      if (data.slot_number) {
+        document.getElementById('rSlot').textContent = data.slot_number;
+        document.getElementById('rowSlot').style.display = 'flex';
+      }
+
+      if (data.action === 'entry') {
+        badge.className = 'result-badge entry';
+        title.className = 'result-title entry';
+        title.textContent = 'Entry Recorded';
+        sub.textContent   = data.message || 'Vehicle has entered the parking area.';
+        icon.setAttribute('stroke', '#2E7D32');
+        icon.innerHTML    = '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>';
+      } else if (data.action === 'exit') {
+        badge.className = 'result-badge exit';
+        title.className = 'result-title exit';
+        title.textContent = 'Exit Recorded';
+        sub.textContent   = data.message || 'Vehicle has exited. Slot is now free.';
+        icon.setAttribute('stroke', '#E65100');
+        icon.innerHTML    = '<circle cx="12" cy="12" r="10"/><line x1="8" y1="12" x2="16" y2="12"/>';
+      } else {
+        badge.className = 'result-badge error';
+        title.className = 'result-title error';
+        title.textContent = 'Error';
+        sub.textContent   = data.message || 'QR code not recognized.';
+        icon.setAttribute('stroke', '#C62828');
+        icon.innerHTML    = '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>';
+      }
+
+      card.classList.add('show');
+      // Stop camera to save battery
+      if (stream) stream.getTracks().forEach(t => t.stop());
+    }
+
+    function rescan() {
+      document.getElementById('resultCard').classList.remove('show');
+      document.getElementById('rowSlot').style.display = 'none';
+      scanning = true;
+      startCamera();
+    }
+
+    startCamera();
+  </script>
+</body>
+</html>
