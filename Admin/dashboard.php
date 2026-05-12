@@ -1,11 +1,13 @@
 <?php
 session_start();
+$base = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'];
+
 if (!isset($_SESSION['user_id'])) {
-    header('Location: http://localhost:8000/Login/login.html');
+    header('Location: ' . $base . '/Login/login.html');
     exit;
 }
 if ($_SESSION['role'] === 'customer') {
-    header('Location: http://localhost:8000/User/userDashboard.php');
+    header('Location: ' . $base . '/User/userDashboard.php');
     exit;
 }
 ?>
@@ -44,7 +46,7 @@ if ($_SESSION['role'] === 'customer') {
         <span class="nav-label">Slot Monitoring</span>
       </a>
       <div class="nav-section-label">Management</div>
-      <a class="nav-item" href="reservations.html" data-tooltip="Reservations">
+      <a class="nav-item" href="reservations.php" data-tooltip="Reservations">
         <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></span>
         <span class="nav-label">Reservations</span>
         <span class="nav-badge">3</span>
@@ -53,7 +55,7 @@ if ($_SESSION['role'] === 'customer') {
         <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span>
         <span class="nav-label">Entry / Exit Logs</span>
       </a>
-      <a class="nav-item" href="reports.html" data-tooltip="Reports">
+      <a class="nav-item" href="reports.php" data-tooltip="Reports">
         <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>
         <span class="nav-label">Reports</span>
       </a>

@@ -20,7 +20,7 @@ if (!$user_code) {
 
 $stmt = $conn->prepare("
     SELECT user_id, firstname, lastname, role, status
-    FROM users
+    FROM view_users
     WHERE user_code = ?
     LIMIT 1
 ");

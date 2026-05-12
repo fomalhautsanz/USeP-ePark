@@ -11,34 +11,52 @@ if (!$conn) {
     exit;
 }
 
-$vehicle_id = $_POST['vehicle_id'] ?? '';
+$vehicle_id = intval($_POST['vehicle_id'] ?? 0);
 
 if (!$vehicle_id) {
     echo json_encode(['success' => false, 'message' => 'No vehicle ID provided.']);
     exit;
 }
 
-// Block deletion if vehicle is currently inside
-$check = $conn->prepare("SELECT log_id FROM entry_exit_logs WHERE vehicle_id = ? AND time_out IS NULL");
-$check->bind_param("i", $vehicle_id);
-$check->execute();
-$check->store_result();
-if ($check->num_rows > 0) {
-    echo json_encode(['success' => false, 'message' => 'Cannot delete a vehicle that is currently parked inside.']);
-    $check->close();
+
+$stmt = $conn->prepare("CALL sp_remove_vehicle(?, @message)");
+
+if (!$stmt) {
+    echo json_encode(['success' => false, 'message' => 'Prepare failed: ' . $conn->error]);
     exit;
 }
-$check->close();
 
-$stmt = $conn->prepare("DELETE FROM vehicle WHERE vehicle_id = ?");
 $stmt->bind_param("i", $vehicle_id);
 
-if ($stmt->execute()) {
-    echo json_encode(['success' => true]);
-} else {
-    echo json_encode(['success' => false, 'message' => $stmt->error]);
+if (!$stmt->execute()) {
+    echo json_encode(['success' => false, 'message' => 'Execution failed: ' . $stmt->error]);
+    $stmt->close();
+    exit;
 }
 
 $stmt->close();
+
+$result = $conn->query("SELECT @message AS message");
+
+if (!$result) {
+    echo json_encode(['success' => false, 'message' => 'Failed to retrieve procedure output']);
+    exit;
+}
+
+$output = $result->fetch_assoc();
+$message = $output['message'];
+
 $conn->close();
+
+if (strpos($message, 'SUCCESS') === 0) {
+    echo json_encode([
+        'success' => true,
+        'message' => $message
+    ]);
+} else {
+    echo json_encode([
+        'success' => false,
+        'message' => $message
+    ]);
+}
 ?>

@@ -1,7 +1,4 @@
 <?php
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
-
 include '../../config/database.php';
 
 header('Content-Type: application/json');
@@ -13,17 +10,30 @@ if (!$conn) {
 
 $slot_id       = $_POST['slot_id']       ?? '';
 $slot_number   = strtoupper(trim($_POST['slot_number']   ?? ''));
-$location_area = trim($_POST['location_area'] ?? '');
+$location_area = strtoupper(trim($_POST['location_area'] ?? ''));
 $status        = $_POST['status']        ?? '';
 
-if (!$slot_id || !$slot_number || !$location_area || !$status) {
+// Validate all fields present
+if (!$slot_id || !is_numeric($slot_id) || !$slot_number || !$location_area || !$status) {
     echo json_encode(['success' => false, 'message' => 'All fields are required.']);
     exit;
 }
 
-// Block manual status change if occupied
+// Whitelist status — this was missing and is why 'maintenance' silently failed
+$allowed_statuses = ['available', 'occupied', 'reserved', 'maintenance'];
+if (!in_array($status, $allowed_statuses, true)) {
+    echo json_encode(['success' => false, 'message' => 'Invalid status value.']);
+    exit;
+}
+
+// Block manual status change if slot is currently occupied
 if ($status !== 'occupied') {
-    $check = $conn->prepare("SELECT log_id FROM entry_exit_logs WHERE slot_id = ? AND time_out IS NULL");
+    $check = $conn->prepare("SELECT log_id FROM entry_exit_logs WHERE slot_id = ? AND log_status = 'in'");
+    if (!$check) {
+        error_log("Prepare failed: " . $conn->error);
+        echo json_encode(['success' => false, 'message' => 'System error']);
+        exit;
+    }
     $check->bind_param("i", $slot_id);
     $check->execute();
     $check->store_result();
@@ -35,8 +45,13 @@ if ($status !== 'occupied') {
     $check->close();
 }
 
-// Check duplicate slot number excluding current
+// Check duplicate slot number excluding current slot
 $check = $conn->prepare("SELECT slot_id FROM parking_slots WHERE slot_number = ? AND slot_id != ?");
+if (!$check) {
+    error_log("Prepare failed: " . $conn->error);
+    echo json_encode(['success' => false, 'message' => 'System error']);
+    exit;
+}
 $check->bind_param("si", $slot_number, $slot_id);
 $check->execute();
 $check->store_result();
@@ -48,12 +63,18 @@ if ($check->num_rows > 0) {
 $check->close();
 
 $stmt = $conn->prepare("UPDATE parking_slots SET slot_number = ?, location_area = ?, status = ? WHERE slot_id = ?");
+if (!$stmt) {
+    error_log("Prepare failed: " . $conn->error);
+    echo json_encode(['success' => false, 'message' => 'System error']);
+    exit;
+}
 $stmt->bind_param("sssi", $slot_number, $location_area, $status, $slot_id);
 
 if ($stmt->execute()) {
     echo json_encode(['success' => true]);
 } else {
-    echo json_encode(['success' => false, 'message' => $stmt->error]);
+    error_log("Execute failed: " . $stmt->error);
+    echo json_encode(['success' => false, 'message' => 'Failed to update slot.']);
 }
 
 $stmt->close();
