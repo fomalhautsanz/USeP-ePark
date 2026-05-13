@@ -3,11 +3,11 @@
 document.addEventListener('DOMContentLoaded', () => {
 
   // Load session user into topbar
-fetch('/USeP-ePark-main/Login/backend/auth/session_user.php')
+fetch('../Login/backend/auth/session_user.php')
     .then(res => res.json())
     .then(data => {
         if (data.error) {
-            window.location.href = 'http://localhost/USeP-ePark-main/Login/login.html';
+            window.location.href = "../Login/login.html";
             return;
         }
         const nameEl   = document.querySelector('.topbar-user-name');
@@ -22,7 +22,7 @@ fetch('/USeP-ePark-main/Login/backend/auth/session_user.php')
             : `/USeP-ePark-main/User/assets/img/userDefaultProfile.jpg`;
     })
     .catch(() => {
-        window.location.href = 'http://localhost/USeP-ePark-main/Login/login.html';
+        window.location.href = "../Login/login.html";
     });
 
 // Logout
@@ -31,7 +31,7 @@ if (logoutBtn) {
     logoutBtn.addEventListener('click', () => {
         fetch('/USeP-ePark-main/Login/backend/auth/logout.php')
             .then(() => {
-                window.location.href = 'http://localhost/USeP-ePark-main/Login/login.html';
+                window.location.href = "../Login/login.html";
             });
     });
 }
@@ -171,6 +171,7 @@ if (logoutBtn) {
   };
 
 });
+
 
 /* ── TRANSACTIONS ── */
 

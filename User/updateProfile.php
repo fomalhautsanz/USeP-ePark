@@ -1,11 +1,11 @@
 <?php
 session_start();
 if (!isset($_SESSION['user_id'])) {
-    header('Location: http://localhost/USeP-ePark-main/Login/login.html');
+    header('Location: ../Login/login.html');
     exit;
 }
 if ($_SESSION['role'] === 'admin' || $_SESSION['role'] === 'staff') {
-    header('Location: http://localhost/USeP-ePark-main/Admin/dashboard.php');
+    header('Location: ../Admin/dashboard.php');
     exit;
 }
 
@@ -19,7 +19,7 @@ $email        = trim($_POST['email'] ?? '');
 $contact      = trim($_POST['contact_number'] ?? '');
 $gender       = trim($_POST['gender'] ?? '');
 $birthdate    = trim($_POST['birthdate'] ?? '') ?: null;
-$vehicle_type = trim($_POST['vehicle_type'] ?? '');
+$vehicle_type = strtolower(trim($_POST['vehicle_type'] ?? ''));
 $plate_number = strtoupper(trim($_POST['plate_number'] ?? ''));
 
 // ── Handle profile picture upload ──
@@ -67,9 +67,11 @@ mysqli_stmt_close($stmt);
 
 // ── Update vehicle table ──
 $stmt2 = mysqli_prepare($conn,
-    "UPDATE vehicle SET vehicle_type=?, plate_number=? WHERE user_id=?"
+    "INSERT INTO vehicle (user_id, vehicle_type, plate_number) 
+     VALUES (?, ?, ?)
+     ON DUPLICATE KEY UPDATE vehicle_type=VALUES(vehicle_type), plate_number=VALUES(plate_number)"
 );
-mysqli_stmt_bind_param($stmt2, 'ssi', $vehicle_type, $plate_number, $user_id);
+mysqli_stmt_bind_param($stmt2, 'iss', $user_id, $vehicle_type, $plate_number);
 mysqli_stmt_execute($stmt2);
 mysqli_stmt_close($stmt2);
 

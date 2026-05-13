@@ -2,7 +2,7 @@
 session_start();
 
 if (!isset($_SESSION['user_id'])) {
-    header('Location: http://localhost/USeP-ePark-main/Login/login.html');
+    header('Location: ../Login/login.html');
     exit;
 }
 
@@ -20,7 +20,9 @@ $contact_number = $_SESSION['contact_number'];
 // FIX #1: vehicle_type and plate_number come from the `vehicle` table (not `users`),
 // so they may not be set in session if your login script doesn't join that table.
 // Added null coalescing fallbacks to prevent undefined index warnings.
+// For display purposes only:
 $vehicle_type = $_SESSION['vehicle_type'] ?? 'Not set';
+$display_vehicle = $vehicle_type !== 'Not set' ? ucfirst($vehicle_type) : 'Not set';
 $plate_number = $_SESSION['plate_number'] ?? 'Not set';
 
 $gender = $_SESSION['gender'] ?? null;

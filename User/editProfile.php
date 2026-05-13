@@ -1,18 +1,18 @@
 <?php
 session_start();
 if (!isset($_SESSION['user_id'])) {
-    header('Location: http://localhost/USeP-ePark-main/Login/login.html');
+    header('Location: ../Login/login.html');
     exit;
 }
 if ($_SESSION['role'] === 'admin' || $_SESSION['role'] === 'staff') {
-    header('Location: http://localhost/USeP-ePark-main/Admin/dashboard.php');
+    header('Location: ../Admin/dashboard.php');
     exit;
 }
 
 // para sa pic 
 $profile_picture = $_SESSION['profile_picture'] ?? null;
 // FIX: fallback to default image instead of null so topbar avatar never breaks
-$pic = !empty($profile_picture) ? '../User/assets/uploads/' . $profile_picture : '../User/assets/img/userDefaultProfile.jpg';
+$pic = !empty($profile_picture) ? 'assets/uploads/' . $profile_picture : 'assets/img/userDefaultProfile.jpg';
 
 $firstname      = $_SESSION['firstname'];
 $lastname       = $_SESSION['lastname'];
@@ -215,10 +215,10 @@ $birthdate      = $_SESSION['birthdate'] ?? '';
                 <label class="form-label" for="inputVehicle">Vehicle Type</label>
                 <select class="form-control" id="inputVehicle" required>
                   <option value="">Select vehicle type</option>
-                  <option value="Car"        <?php echo $vehicle_type === 'Car'        ? 'selected' : ''; ?>>Car</option>
-                  <option value="Motorcycle" <?php echo $vehicle_type === 'Motorcycle' ? 'selected' : ''; ?>>Motorcycle</option>
-                  <option value="Van"        <?php echo $vehicle_type === 'Van'        ? 'selected' : ''; ?>>Van</option>
-                  <option value="Truck"      <?php echo $vehicle_type === 'Truck'      ? 'selected' : ''; ?>>Truck</option>
+                  <option value="Car"        <?php echo $vehicle_type === 'car'        ? 'selected' : ''; ?>>Car</option>
+                  <option value="Motorcycle" <?php echo $vehicle_type === 'motorcycle' ? 'selected' : ''; ?>>Motorcycle</option>
+                  <option value="Van"        <?php echo $vehicle_type === 'van'        ? 'selected' : ''; ?>>Van</option>
+                  <option value="Truck"      <?php echo $vehicle_type === 'truck'      ? 'selected' : ''; ?>>Truck</option>
                 </select>
               </div>
 

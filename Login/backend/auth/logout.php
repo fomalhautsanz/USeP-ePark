@@ -4,6 +4,6 @@
 session_start();
 session_unset();
 session_destroy();
-header('Location: /USeP-ePark-main/Login/login.html');
+header('Location: ../../../Login/login.html');
 exit;
 ?>

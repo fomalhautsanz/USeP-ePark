@@ -112,7 +112,7 @@ $role = $user['role'];
 
 $redirect = match($role) {
     'admin', 'staff' => '/Admin/dashboard.php',
-    'customer'       => '/USeP-ePark-main/User/userDashboard.php', // DAPAT ANI 
+    'customer'       => '/User/userDashboard.php', // DAPAT ANI 
     default          => null
 };
 

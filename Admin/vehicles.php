@@ -103,6 +103,8 @@ if ($_SESSION['role'] === 'customer') {
               <option value="">All Types</option>
               <option value="car">Car</option>
               <option value="motorcycle">Motorcycle</option>
+              <option value="van">Van</option>
+              <option value="truck">Truck</option>
             </select>
             <select class="form-control" style="width:auto;padding:7px 32px 7px 12px;font-size:12px;" data-filter-table="vehicleTable" data-filter-col="5">
               <option value="">All Status</option>

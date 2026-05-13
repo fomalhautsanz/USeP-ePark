@@ -1,11 +1,11 @@
 <?php
 session_start();
 if (!isset($_SESSION['user_id'])) {
-    header('Location: http://localhost/USeP-ePark-main/Login/login.html');
+    header('Location: ../Login/login.html');
     exit;
 }
 if ($_SESSION['role'] === 'admin' || $_SESSION['role'] === 'staff') {
-    header('Location: http://localhost/USeP-ePark-main/Admin/dashboard.php');
+    header('Location: ../Admin/dashboard.php');
     exit;
 }
 

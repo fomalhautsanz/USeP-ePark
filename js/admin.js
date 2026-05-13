@@ -229,7 +229,7 @@ function loadUsers() {
                 row.innerHTML = `
                     <td>
                         <div class="user-card">
-                            <img src="../assets/avatars/avatar-${user.role}.svg" alt="${fullName}"
+                            <img src="../User/assets/uploads/${user.profile_picture}" alt="${fullName}"
                                  style="width:38px;height:38px;border-radius:8px;object-fit:cover;flex-shrink:0;"
                                  onerror="this.src='../assets/avatars/avatar-student.svg'">
                             <div>
