@@ -1070,6 +1070,99 @@ function initDeleteSlot() {
     });
 }
 
+function initReports() {
+    const btn = document.querySelector(".btn.btn-primary");
+    if (!btn) return; // prevents errors on other pages
+
+    btn.addEventListener("click", () => {
+        const selects = document.querySelectorAll("select");
+        const dates   = document.querySelectorAll("input[type=date]");
+
+        const type = selects[0]?.value;
+        const from = dates[0]?.value;
+        const to   = dates[1]?.value;
+
+        let mappedType = "";
+
+        switch(type) {
+            case "Daily Summary": mappedType = "daily"; break;
+            case "Weekly Summary": mappedType = "daily"; break;
+            case "Monthly Summary": mappedType = "monthly"; break;
+            case "Vehicle Activity": mappedType = "vehicle"; break;
+            case "Revenue Report": mappedType = "revenue"; break;
+            case "Slot Utilization": mappedType = "slots"; break;
+        }
+
+        fetch(`backend/reports.php?type=${mappedType}&from=${from}&to=${to}`)
+            .then(res => res.json())
+            .then(data => {
+                console.log("Report Data:", data);
+
+                // TEMP: just confirm it's working
+                alert("Report generated! Check console.");
+
+                // Later: render table / charts here
+            })
+            .catch(err => console.error("Report error:", err));
+    });
+}
+
+function loadReportSummary() {
+    fetch("backend/reports/get_report_summary.php")
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById("reportEntries").textContent =
+                data.entries.toLocaleString();
+
+            document.getElementById("reportRevenue").textContent =
+                "₱" + Number(data.revenue).toLocaleString();
+
+            document.getElementById("reportOccupancy").textContent =
+                data.occupancy + "%";
+
+            // convert minutes → h m
+            const hours = Math.floor(data.avg_duration / 60);
+            const mins  = Math.round(data.avg_duration % 60);
+            document.getElementById("reportDuration").textContent =
+                `${hours}h ${mins}m`;
+        })
+        .catch(err => console.error("Report summary error:", err));
+}
+
+function loadTopVehiclesReport() {
+    const tbody = document.querySelector("#reportTopVehicles tbody");
+    if (!tbody) return;
+
+    fetch("backend/reports/get_top_vehicles.php")
+        .then(res => res.json())
+        .then(data => {
+            tbody.innerHTML = "";
+
+            data.forEach((v, index) => {
+                const totalHours = Math.floor(v.total_minutes / 60);
+                const totalMins  = v.total_minutes % 60;
+
+                const avgMinutes = v.total_minutes / v.total_entries;
+                const avgH = Math.floor(avgMinutes / 60);
+                const avgM = Math.round(avgMinutes % 60);
+
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td class="td-mono">${v.plate_number}</td>
+                    <td>${v.firstname} ${v.lastname}</td>
+                    <td>${v.vehicle_type}</td>
+                    <td>${v.total_entries}</td>
+                    <td>${totalHours}h ${totalMins}m</td>
+                    <td>₱${Number(v.total_fee).toLocaleString()}</td>
+                    <td>${avgH}h ${avgM}m</td>
+                `;
+                tbody.appendChild(row);
+            });
+        })
+        .catch(err => console.error("Top vehicles error:", err));
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   initSidebar();
   initModals();
@@ -1100,4 +1193,8 @@ document.addEventListener('DOMContentLoaded', () => {
   initUpdateSlot();
   initCreateSlot();
   initDeleteSlot();
+
+  initReports();
+  loadReportSummary();
+  loadTopVehiclesReport();
 });

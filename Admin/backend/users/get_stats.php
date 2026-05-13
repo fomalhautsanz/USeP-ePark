@@ -6,23 +6,19 @@ if (!$conn) {
     exit;
 }
 
+// Stats file — query the view
+$queries = [
+    'total'     => "SELECT COUNT(*) AS count FROM view_users",
+    'active'    => "SELECT COUNT(*) AS count FROM view_users WHERE status = 'active'",
+    'suspended' => "SELECT COUNT(*) AS count FROM view_users WHERE status = 'suspended'",
+    'admins'    => "SELECT COUNT(*) AS count FROM view_users WHERE role = 'admin'",
+];
+
 $stats = [];
-
-// Total users
-$result = $conn->query("SELECT COUNT(*) AS count FROM users");
-$stats['total'] = $result->fetch_assoc()['count'];
-
-// Active users
-$result = $conn->query("SELECT COUNT(*) AS count FROM users WHERE status = 'active'");
-$stats['active'] = $result->fetch_assoc()['count'];
-
-// Suspended users
-$result = $conn->query("SELECT COUNT(*) AS count FROM users WHERE status = 'suspended'");
-$stats['suspended'] = $result->fetch_assoc()['count'];
-
-// Admins
-$result = $conn->query("SELECT COUNT(*) AS count FROM users WHERE role = 'admin'");
-$stats['admins'] = $result->fetch_assoc()['count'];
+foreach ($queries as $key => $sql) {
+    $result = $conn->query($sql);
+    $stats[$key] = $result->fetch_assoc()['count'];
+}
 
 $conn->close();
 

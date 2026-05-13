@@ -11,36 +11,67 @@ if (!$conn) {
     exit;
 }
 
-$user_id      = $_POST['user_id']      ?? '';
+$user_id      = intval($_POST['user_id'] ?? 0);
 $plate_number = strtoupper(trim($_POST['plate_number'] ?? ''));
-$vehicle_type = strtolower($_POST['vehicle_type'] ?? '');
+$vehicle_type = strtolower(trim($_POST['vehicle_type'] ?? ''));
+
 
 if (!$user_id || !$plate_number || !$vehicle_type) {
     echo json_encode(['success' => false, 'message' => 'All fields are required.']);
     exit;
 }
 
-// Check for duplicate plate number
-$check = $conn->prepare("SELECT vehicle_id FROM vehicle WHERE plate_number = ?");
-$check->bind_param("s", $plate_number);
-$check->execute();
-$check->store_result();
-if ($check->num_rows > 0) {
-    echo json_encode(['success' => false, 'message' => 'Plate number already registered.']);
-    $check->close();
+if (!preg_match('/^[A-Z0-9\-]{2,20}$/', $plate_number)) {
+    echo json_encode(['success' => false, 'message' => 'Invalid plate number format.']);
     exit;
 }
-$check->close();
 
-$stmt = $conn->prepare("INSERT INTO vehicle (user_id, plate_number, vehicle_type) VALUES (?, ?, ?)");
+if (!in_array($vehicle_type, ['car', 'motorcycle'])) {
+    echo json_encode(['success' => false, 'message' => 'Invalid vehicle type.']);
+    exit;
+}
+
+
+$stmt = $conn->prepare("CALL sp_register_vehicle(?, ?, ?, @vehicle_id, @message)");
+
+if (!$stmt) {
+    echo json_encode(['success' => false, 'message' => 'Prepare failed: ' . $conn->error]);
+    exit;
+}
+
 $stmt->bind_param("iss", $user_id, $plate_number, $vehicle_type);
 
-if ($stmt->execute()) {
-    echo json_encode(['success' => true, 'vehicle_id' => $conn->insert_id]);
-} else {
-    echo json_encode(['success' => false, 'message' => $stmt->error]);
+if (!$stmt->execute()) {
+    echo json_encode(['success' => false, 'message' => 'Execution failed: ' . $stmt->error]);
+    $stmt->close();
+    exit;
 }
 
 $stmt->close();
+
+$result = $conn->query("SELECT @vehicle_id AS vehicle_id, @message AS message");
+
+if (!$result) {
+    echo json_encode(['success' => false, 'message' => 'Failed to retrieve procedure output']);
+    exit;
+}
+
+$output = $result->fetch_assoc();
+$vehicle_id = $output['vehicle_id'];
+$message    = $output['message'];
+
 $conn->close();
+
+if ($vehicle_id) {
+    echo json_encode([
+        'success'    => true,
+        'vehicle_id' => $vehicle_id,
+        'message'    => $message
+    ]);
+} else {
+    echo json_encode([
+        'success' => false,
+        'message' => $message
+    ]);
+}
 ?>

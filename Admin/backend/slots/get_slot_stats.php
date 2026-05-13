@@ -8,19 +8,24 @@ if (!$conn) {
     exit;
 }
 
-$stats = [];
+$result = $conn->query("
+    SELECT
+        SUM(available_slots) AS available,
+        SUM(occupied_slots)  AS occupied,
+        SUM(reserved_slots)  AS reserved,
+        SUM(total_slots)     AS total
+    FROM view_slot_availability
+");
 
-$result = $conn->query("SELECT COUNT(*) AS count FROM parking_slots WHERE status = 'available'");
-$stats['available'] = $result->fetch_assoc()['count'];
+if (!$result) {
+    error_log("Query failed: " . $conn->error);
+    echo json_encode(['error' => 'System error']);
+    exit;
+}
 
-$result = $conn->query("SELECT COUNT(*) AS count FROM parking_slots WHERE status = 'occupied'");
-$stats['occupied'] = $result->fetch_assoc()['count'];
+$stats = $result->fetch_assoc();
 
-$result = $conn->query("SELECT COUNT(*) AS count FROM parking_slots WHERE status = 'reserved'");
-$stats['reserved'] = $result->fetch_assoc()['count'];
-
-$result = $conn->query("SELECT COUNT(*) AS count FROM parking_slots WHERE status = 'maintenance'");
-$stats['maintenance'] = $result->fetch_assoc()['count'];
+$stats = array_map('intval', $stats);
 
 $conn->close();
 

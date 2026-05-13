@@ -1,0 +1,851 @@
+-- MySQL dump 10.13  Distrib 8.0.45, for Win64 (x86_64)
+--
+-- Host: 127.0.0.1    Database: usep_epark
+-- ------------------------------------------------------
+-- Server version	8.0.45
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!50503 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `audit_payment_log`
+--
+
+DROP TABLE IF EXISTS `audit_payment_log`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `audit_payment_log` (
+  `audit_id` int NOT NULL AUTO_INCREMENT,
+  `log_id` int NOT NULL,
+  `payment_id` int NOT NULL,
+  `amount` decimal(10,2) NOT NULL,
+  `method` varchar(50) NOT NULL,
+  `recorded_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`audit_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `audit_payment_log`
+--
+
+LOCK TABLES `audit_payment_log` WRITE;
+/*!40000 ALTER TABLE `audit_payment_log` DISABLE KEYS */;
+/*!40000 ALTER TABLE `audit_payment_log` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `entry_exit_logs`
+--
+
+DROP TABLE IF EXISTS `entry_exit_logs`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `entry_exit_logs` (
+  `log_id` int NOT NULL AUTO_INCREMENT,
+  `reservation_id` int DEFAULT NULL,
+  `vehicle_id` int NOT NULL,
+  `slot_id` int NOT NULL,
+  `time_in` datetime NOT NULL,
+  `time_out` datetime DEFAULT NULL,
+  `total_duration` decimal(10,2) DEFAULT NULL,
+  `parking_fee` decimal(10,2) DEFAULT NULL,
+  `log_status` enum('in','out','denied') NOT NULL DEFAULT 'in',
+  PRIMARY KEY (`log_id`),
+  KEY `reservation_id` (`reservation_id`),
+  KEY `vehicle_id` (`vehicle_id`),
+  KEY `slot_id` (`slot_id`),
+  CONSTRAINT `entry_exit_logs_ibfk_1` FOREIGN KEY (`reservation_id`) REFERENCES `reservations` (`reservation_id`) ON DELETE SET NULL,
+  CONSTRAINT `entry_exit_logs_ibfk_2` FOREIGN KEY (`vehicle_id`) REFERENCES `vehicle` (`vehicle_id`) ON DELETE CASCADE,
+  CONSTRAINT `entry_exit_logs_ibfk_3` FOREIGN KEY (`slot_id`) REFERENCES `parking_slots` (`slot_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `entry_exit_logs`
+--
+
+LOCK TABLES `entry_exit_logs` WRITE;
+/*!40000 ALTER TABLE `entry_exit_logs` DISABLE KEYS */;
+/*!40000 ALTER TABLE `entry_exit_logs` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `parking_slots`
+--
+
+DROP TABLE IF EXISTS `parking_slots`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `parking_slots` (
+  `slot_id` int NOT NULL AUTO_INCREMENT,
+  `slot_number` varchar(10) NOT NULL DEFAULT '',
+  `status` enum('available','occupied','reserved','maintenance') NOT NULL DEFAULT 'available',
+  `location_area` varchar(50) NOT NULL,
+  PRIMARY KEY (`slot_id`),
+  UNIQUE KEY `slot_number` (`slot_number`)
+) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `parking_slots`
+--
+
+LOCK TABLES `parking_slots` WRITE;
+/*!40000 ALTER TABLE `parking_slots` DISABLE KEYS */;
+INSERT INTO `parking_slots` VALUES (4,'A-01','available','A'),(5,'A-02','occupied','A'),(6,'A-03','reserved','A'),(7,'A-04','maintenance','A'),(8,'A-05','reserved','A'),(9,'A-06','available','A'),(10,'A-07','occupied','A'),(11,'A-08','available','A'),(12,'A-09','occupied','A'),(13,'A-10','occupied','A'),(14,'B-01','available','B'),(15,'B-02','available','B'),(16,'B-03','available','B'),(17,'B-04','reserved','B'),(18,'B-05','available','B'),(19,'B-06','available','B'),(20,'B-07','available','B'),(21,'B-08','available','B'),(22,'B-09','available','B'),(23,'B-10','available','B'),(24,'C-01','available','C'),(25,'C-02','available','C'),(26,'C-03','available','C'),(27,'C-04','available','C'),(28,'C-05','available','C'),(29,'C-06','available','C'),(30,'C-07','available','C'),(31,'C-08','available','C'),(32,'C-09','available','C'),(33,'C-10','available','C'),(34,'A-11','available','A');
+/*!40000 ALTER TABLE `parking_slots` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `payments`
+--
+
+DROP TABLE IF EXISTS `payments`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `payments` (
+  `payment_id` int NOT NULL AUTO_INCREMENT,
+  `log_id` int NOT NULL,
+  `amount` decimal(10,2) NOT NULL,
+  `payment_date` datetime NOT NULL,
+  `method` varchar(50) NOT NULL,
+  `receipt_number` varchar(100) NOT NULL,
+  PRIMARY KEY (`payment_id`),
+  KEY `log_id` (`log_id`),
+  CONSTRAINT `payments_ibfk_1` FOREIGN KEY (`log_id`) REFERENCES `entry_exit_logs` (`log_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `payments`
+--
+
+LOCK TABLES `payments` WRITE;
+/*!40000 ALTER TABLE `payments` DISABLE KEYS */;
+/*!40000 ALTER TABLE `payments` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `reservations`
+--
+
+DROP TABLE IF EXISTS `reservations`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `reservations` (
+  `reservation_id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `slot_id` int NOT NULL,
+  `time_reserved` datetime NOT NULL,
+  `reservation_expiry` datetime NOT NULL,
+  `status` enum('active','expired','cancelled','completed') NOT NULL DEFAULT 'active',
+  PRIMARY KEY (`reservation_id`),
+  KEY `user_id` (`user_id`),
+  KEY `slot_id` (`slot_id`),
+  CONSTRAINT `reservations_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE,
+  CONSTRAINT `reservations_ibfk_2` FOREIGN KEY (`slot_id`) REFERENCES `parking_slots` (`slot_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `reservations`
+--
+
+LOCK TABLES `reservations` WRITE;
+/*!40000 ALTER TABLE `reservations` DISABLE KEYS */;
+/*!40000 ALTER TABLE `reservations` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `users`
+--
+
+DROP TABLE IF EXISTS `users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `users` (
+  `user_id` int NOT NULL AUTO_INCREMENT,
+  `firstname` varchar(50) NOT NULL,
+  `lastname` varchar(50) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `contact_number` varchar(20) NOT NULL,
+  `role` enum('customer','staff','admin','guard') NOT NULL,
+  `qr_code` varchar(255) DEFAULT NULL,
+  `password_hash` varchar(255) NOT NULL,
+  `status` enum('active','suspended') NOT NULL DEFAULT 'active',
+  `user_code` varchar(20) DEFAULT NULL,
+  `last_login` datetime DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `birthdate` date DEFAULT NULL,
+  `gender` varchar(50) DEFAULT NULL,
+  `profile_picture` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`user_id`),
+  UNIQUE KEY `email` (`email`),
+  UNIQUE KEY `user_code` (`user_code`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `users`
+--
+
+LOCK TABLES `users` WRITE;
+/*!40000 ALTER TABLE `users` DISABLE KEYS */;
+INSERT INTO `users` VALUES (1,'Izaac','Newton','izaacnewton@gmail.com','09985259075','customer',NULL,'$2y$12$dBd/QRkvDCJLsmWshxVpxu/f40qIFapNh4JRqe0W3rDhR5Rvc8rXe','suspended','CUS-2026-0001','2026-04-30 20:59:39','2026-03-19 20:35:11',NULL,NULL,NULL),(2,'Albert','Einstein','alberteinstein@gmail.com','09630726210','admin',NULL,'$2y$12$QPCT3bEA92YFLQ0MTVy8jeqUNAel.fauQUbaKznPPuzF7QsJ.n72u','active','ADM-2026-0001','2026-05-06 16:14:56','2026-03-19 20:35:57',NULL,NULL,NULL),(3,'Marie','Curie','mariecurie@gmail.com','09087726210','guard',NULL,'$2y$12$vvCz1GD.jQsOCUhJOUeW8.iflW/Op59njP7HN11DD.um8ekdXr/pa','active','GRD-2026-0001',NULL,'2026-04-27 21:55:53',NULL,NULL,NULL),(4,'Michael','Faraday','michaelfaraday@gmail.com','09087733409','customer',NULL,'$2y$12$IsaQQwlj1OVGl6ttQep.LuwyJ.1gunVH5qGbpoPzN9VLNvpZh2lmi','active','CUS-2026-0002',NULL,'2026-05-05 20:14:48',NULL,NULL,NULL);
+/*!40000 ALTER TABLE `users` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `vehicle`
+--
+
+DROP TABLE IF EXISTS `vehicle`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `vehicle` (
+  `vehicle_id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `plate_number` varchar(20) NOT NULL,
+  `vehicle_type` varchar(50) NOT NULL,
+  PRIMARY KEY (`vehicle_id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `vehicle_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `vehicle`
+--
+
+LOCK TABLES `vehicle` WRITE;
+/*!40000 ALTER TABLE `vehicle` DISABLE KEYS */;
+INSERT INTO `vehicle` VALUES (1,2,'LMN 433','car'),(2,4,'ABC 241','motorcycle');
+/*!40000 ALTER TABLE `vehicle` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Temporary view structure for view `view_all_slots_status`
+--
+
+DROP TABLE IF EXISTS `view_all_slots_status`;
+/*!50001 DROP VIEW IF EXISTS `view_all_slots_status`*/;
+SET @saved_cs_client     = @@character_set_client;
+/*!50503 SET character_set_client = utf8mb4 */;
+/*!50001 CREATE VIEW `view_all_slots_status` AS SELECT 
+ 1 AS `slot_id`,
+ 1 AS `slot_number`,
+ 1 AS `location_area`,
+ 1 AS `status`,
+ 1 AS `plate_number`,
+ 1 AS `occupant_name`,
+ 1 AS `time_in`*/;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Temporary view structure for view `view_current_month_summary`
+--
+
+DROP TABLE IF EXISTS `view_current_month_summary`;
+/*!50001 DROP VIEW IF EXISTS `view_current_month_summary`*/;
+SET @saved_cs_client     = @@character_set_client;
+/*!50503 SET character_set_client = utf8mb4 */;
+/*!50001 CREATE VIEW `view_current_month_summary` AS SELECT 
+ 1 AS `total_entries`,
+ 1 AS `revenue`,
+ 1 AS `avg_duration`*/;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Temporary view structure for view `view_current_month_top_vehicles`
+--
+
+DROP TABLE IF EXISTS `view_current_month_top_vehicles`;
+/*!50001 DROP VIEW IF EXISTS `view_current_month_top_vehicles`*/;
+SET @saved_cs_client     = @@character_set_client;
+/*!50503 SET character_set_client = utf8mb4 */;
+/*!50001 CREATE VIEW `view_current_month_top_vehicles` AS SELECT 
+ 1 AS `plate_number`,
+ 1 AS `owner`,
+ 1 AS `vehicle_type`,
+ 1 AS `total_entries`,
+ 1 AS `total_hours`,
+ 1 AS `total_fee`,
+ 1 AS `avg_duration`*/;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Temporary view structure for view `view_daily_revenue`
+--
+
+DROP TABLE IF EXISTS `view_daily_revenue`;
+/*!50001 DROP VIEW IF EXISTS `view_daily_revenue`*/;
+SET @saved_cs_client     = @@character_set_client;
+/*!50503 SET character_set_client = utf8mb4 */;
+/*!50001 CREATE VIEW `view_daily_revenue` AS SELECT 
+ 1 AS `payment_date`,
+ 1 AS `total_transactions`,
+ 1 AS `unique_users`,
+ 1 AS `total_revenue`,
+ 1 AS `average_transaction`,
+ 1 AS `minimum_payment`,
+ 1 AS `maximum_payment`*/;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Temporary view structure for view `view_logs_list`
+--
+
+DROP TABLE IF EXISTS `view_logs_list`;
+/*!50001 DROP VIEW IF EXISTS `view_logs_list`*/;
+SET @saved_cs_client     = @@character_set_client;
+/*!50503 SET character_set_client = utf8mb4 */;
+/*!50001 CREATE VIEW `view_logs_list` AS SELECT 
+ 1 AS `log_id`,
+ 1 AS `log_status`,
+ 1 AS `time_in`,
+ 1 AS `time_out`,
+ 1 AS `total_duration`,
+ 1 AS `parking_fee`,
+ 1 AS `vehicle_id`,
+ 1 AS `plate_number`,
+ 1 AS `vehicle_type`,
+ 1 AS `user_id`,
+ 1 AS `user_code`,
+ 1 AS `owner_name`,
+ 1 AS `contact_number`,
+ 1 AS `slot_id`,
+ 1 AS `slot_number`,
+ 1 AS `location_area`,
+ 1 AS `payment_id`,
+ 1 AS `payment_amount`,
+ 1 AS `payment_date`,
+ 1 AS `payment_method`,
+ 1 AS `receipt_number`,
+ 1 AS `reservation_id`*/;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Temporary view structure for view `view_logs_today_stats`
+--
+
+DROP TABLE IF EXISTS `view_logs_today_stats`;
+/*!50001 DROP VIEW IF EXISTS `view_logs_today_stats`*/;
+SET @saved_cs_client     = @@character_set_client;
+/*!50503 SET character_set_client = utf8mb4 */;
+/*!50001 CREATE VIEW `view_logs_today_stats` AS SELECT 
+ 1 AS `today_entries`,
+ 1 AS `today_exits`,
+ 1 AS `today_denied`,
+ 1 AS `today_revenue`*/;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Temporary view structure for view `view_monthly_parking_stats`
+--
+
+DROP TABLE IF EXISTS `view_monthly_parking_stats`;
+/*!50001 DROP VIEW IF EXISTS `view_monthly_parking_stats`*/;
+SET @saved_cs_client     = @@character_set_client;
+/*!50503 SET character_set_client = utf8mb4 */;
+/*!50001 CREATE VIEW `view_monthly_parking_stats` AS SELECT 
+ 1 AS `year`,
+ 1 AS `month`,
+ 1 AS `total_parking_sessions`,
+ 1 AS `unique_vehicles`,
+ 1 AS `unique_users`,
+ 1 AS `total_parking_fees`,
+ 1 AS `avg_parking_duration`*/;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Temporary view structure for view `view_monthly_revenue_trend`
+--
+
+DROP TABLE IF EXISTS `view_monthly_revenue_trend`;
+/*!50001 DROP VIEW IF EXISTS `view_monthly_revenue_trend`*/;
+SET @saved_cs_client     = @@character_set_client;
+/*!50503 SET character_set_client = utf8mb4 */;
+/*!50001 CREATE VIEW `view_monthly_revenue_trend` AS SELECT 
+ 1 AS `year`,
+ 1 AS `month`,
+ 1 AS `month_label`,
+ 1 AS `yearmonth`,
+ 1 AS `total_revenue`,
+ 1 AS `total_transactions`*/;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Temporary view structure for view `view_reservation_stats_today`
+--
+
+DROP TABLE IF EXISTS `view_reservation_stats_today`;
+/*!50001 DROP VIEW IF EXISTS `view_reservation_stats_today`*/;
+SET @saved_cs_client     = @@character_set_client;
+/*!50503 SET character_set_client = utf8mb4 */;
+/*!50001 CREATE VIEW `view_reservation_stats_today` AS SELECT 
+ 1 AS `total_today`,
+ 1 AS `pending`,
+ 1 AS `approved`,
+ 1 AS `cancelled`*/;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Temporary view structure for view `view_reservations_full`
+--
+
+DROP TABLE IF EXISTS `view_reservations_full`;
+/*!50001 DROP VIEW IF EXISTS `view_reservations_full`*/;
+SET @saved_cs_client     = @@character_set_client;
+/*!50503 SET character_set_client = utf8mb4 */;
+/*!50001 CREATE VIEW `view_reservations_full` AS SELECT 
+ 1 AS `reservation_id`,
+ 1 AS `ref_number`,
+ 1 AS `user_id`,
+ 1 AS `user_code`,
+ 1 AS `firstname`,
+ 1 AS `lastname`,
+ 1 AS `full_name`,
+ 1 AS `email`,
+ 1 AS `contact_number`,
+ 1 AS `user_role`,
+ 1 AS `profile_picture`,
+ 1 AS `vehicle_id`,
+ 1 AS `plate_number`,
+ 1 AS `vehicle_type`,
+ 1 AS `slot_id`,
+ 1 AS `slot_number`,
+ 1 AS `location_area`,
+ 1 AS `time_reserved`,
+ 1 AS `reservation_expiry`,
+ 1 AS `duration_minutes`,
+ 1 AS `minutes_until_expiry`,
+ 1 AS `status`,
+ 1 AS `date_label`,
+ 1 AS `time_label`*/;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Temporary view structure for view `view_slot_availability`
+--
+
+DROP TABLE IF EXISTS `view_slot_availability`;
+/*!50001 DROP VIEW IF EXISTS `view_slot_availability`*/;
+SET @saved_cs_client     = @@character_set_client;
+/*!50503 SET character_set_client = utf8mb4 */;
+/*!50001 CREATE VIEW `view_slot_availability` AS SELECT 
+ 1 AS `location_area`,
+ 1 AS `total_slots`,
+ 1 AS `available_slots`,
+ 1 AS `occupied_slots`,
+ 1 AS `reserved_slots`,
+ 1 AS `availability_percentage`*/;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Temporary view structure for view `view_staff_activity`
+--
+
+DROP TABLE IF EXISTS `view_staff_activity`;
+/*!50001 DROP VIEW IF EXISTS `view_staff_activity`*/;
+SET @saved_cs_client     = @@character_set_client;
+/*!50503 SET character_set_client = utf8mb4 */;
+/*!50001 CREATE VIEW `view_staff_activity` AS SELECT 
+ 1 AS `user_id`,
+ 1 AS `user_code`,
+ 1 AS `firstname`,
+ 1 AS `lastname`,
+ 1 AS `email`,
+ 1 AS `role`,
+ 1 AS `status`,
+ 1 AS `last_login`,
+ 1 AS `days_since_last_login`*/;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Temporary view structure for view `view_user_statistics`
+--
+
+DROP TABLE IF EXISTS `view_user_statistics`;
+/*!50001 DROP VIEW IF EXISTS `view_user_statistics`*/;
+SET @saved_cs_client     = @@character_set_client;
+/*!50503 SET character_set_client = utf8mb4 */;
+/*!50001 CREATE VIEW `view_user_statistics` AS SELECT 
+ 1 AS `user_id`,
+ 1 AS `user_code`,
+ 1 AS `firstname`,
+ 1 AS `lastname`,
+ 1 AS `email`,
+ 1 AS `role`,
+ 1 AS `total_vehicles`,
+ 1 AS `total_reservations`,
+ 1 AS `total_parking_sessions`,
+ 1 AS `total_amount_paid`,
+ 1 AS `last_parking_date`*/;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Temporary view structure for view `view_users`
+--
+
+DROP TABLE IF EXISTS `view_users`;
+/*!50001 DROP VIEW IF EXISTS `view_users`*/;
+SET @saved_cs_client     = @@character_set_client;
+/*!50503 SET character_set_client = utf8mb4 */;
+/*!50001 CREATE VIEW `view_users` AS SELECT 
+ 1 AS `user_id`,
+ 1 AS `user_code`,
+ 1 AS `firstname`,
+ 1 AS `lastname`,
+ 1 AS `email`,
+ 1 AS `contact_number`,
+ 1 AS `role`,
+ 1 AS `status`,
+ 1 AS `last_login`,
+ 1 AS `created_at`,
+ 1 AS `vehicle_count`*/;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Temporary view structure for view `view_vehicle_list`
+--
+
+DROP TABLE IF EXISTS `view_vehicle_list`;
+/*!50001 DROP VIEW IF EXISTS `view_vehicle_list`*/;
+SET @saved_cs_client     = @@character_set_client;
+/*!50503 SET character_set_client = utf8mb4 */;
+/*!50001 CREATE VIEW `view_vehicle_list` AS SELECT 
+ 1 AS `vehicle_id`,
+ 1 AS `plate_number`,
+ 1 AS `vehicle_type`,
+ 1 AS `user_id`,
+ 1 AS `user_code`,
+ 1 AS `firstname`,
+ 1 AS `lastname`,
+ 1 AS `role`,
+ 1 AS `parking_status`,
+ 1 AS `slot_number`,
+ 1 AS `last_seen`*/;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Temporary view structure for view `view_vehicle_stats`
+--
+
+DROP TABLE IF EXISTS `view_vehicle_stats`;
+/*!50001 DROP VIEW IF EXISTS `view_vehicle_stats`*/;
+SET @saved_cs_client     = @@character_set_client;
+/*!50503 SET character_set_client = utf8mb4 */;
+/*!50001 CREATE VIEW `view_vehicle_stats` AS SELECT 
+ 1 AS `total`,
+ 1 AS `inside`,
+ 1 AS `cars`,
+ 1 AS `motorcycles`*/;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Final view structure for view `view_all_slots_status`
+--
+
+/*!50001 DROP VIEW IF EXISTS `view_all_slots_status`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
+/*!50001 VIEW `view_all_slots_status` AS select `s`.`slot_id` AS `slot_id`,`s`.`slot_number` AS `slot_number`,`s`.`location_area` AS `location_area`,`s`.`status` AS `status`,`v`.`plate_number` AS `plate_number`,concat(`u`.`firstname`,' ',`u`.`lastname`) AS `occupant_name`,`e`.`time_in` AS `time_in` from (((`parking_slots` `s` left join `entry_exit_logs` `e` on(((`e`.`slot_id` = `s`.`slot_id`) and (`e`.`time_out` is null)))) left join `vehicle` `v` on((`v`.`vehicle_id` = `e`.`vehicle_id`))) left join `users` `u` on((`u`.`user_id` = `v`.`user_id`))) */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
+-- Final view structure for view `view_current_month_summary`
+--
+
+/*!50001 DROP VIEW IF EXISTS `view_current_month_summary`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
+/*!50001 VIEW `view_current_month_summary` AS select count(0) AS `total_entries`,coalesce(sum(`entry_exit_logs`.`parking_fee`),0) AS `revenue`,coalesce(avg(`entry_exit_logs`.`total_duration`),0) AS `avg_duration` from `entry_exit_logs` where ((`entry_exit_logs`.`log_status` = 'out') and (year(`entry_exit_logs`.`time_in`) = year(curdate())) and (month(`entry_exit_logs`.`time_in`) = month(curdate()))) */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
+-- Final view structure for view `view_current_month_top_vehicles`
+--
+
+/*!50001 DROP VIEW IF EXISTS `view_current_month_top_vehicles`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
+/*!50001 VIEW `view_current_month_top_vehicles` AS select `v`.`plate_number` AS `plate_number`,concat(`u`.`firstname`,' ',`u`.`lastname`) AS `owner`,`v`.`vehicle_type` AS `vehicle_type`,count(`eel`.`log_id`) AS `total_entries`,coalesce(sum(`eel`.`total_duration`),0) AS `total_hours`,coalesce(sum(`eel`.`parking_fee`),0) AS `total_fee`,coalesce(avg(`eel`.`total_duration`),0) AS `avg_duration` from ((`entry_exit_logs` `eel` join `vehicle` `v` on((`eel`.`vehicle_id` = `v`.`vehicle_id`))) join `users` `u` on((`v`.`user_id` = `u`.`user_id`))) where ((`eel`.`log_status` = 'out') and (year(`eel`.`time_in`) = year(curdate())) and (month(`eel`.`time_in`) = month(curdate()))) group by `v`.`vehicle_id`,`v`.`plate_number`,`u`.`firstname`,`u`.`lastname`,`v`.`vehicle_type` order by `total_entries` desc limit 5 */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
+-- Final view structure for view `view_daily_revenue`
+--
+
+/*!50001 DROP VIEW IF EXISTS `view_daily_revenue`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
+/*!50001 VIEW `view_daily_revenue` AS select cast(`p`.`payment_date` as date) AS `payment_date`,count(distinct `p`.`payment_id`) AS `total_transactions`,count(distinct `v`.`user_id`) AS `unique_users`,sum(`p`.`amount`) AS `total_revenue`,avg(`p`.`amount`) AS `average_transaction`,min(`p`.`amount`) AS `minimum_payment`,max(`p`.`amount`) AS `maximum_payment` from ((`payments` `p` join `entry_exit_logs` `eel` on((`p`.`log_id` = `eel`.`log_id`))) join `vehicle` `v` on((`eel`.`vehicle_id` = `v`.`vehicle_id`))) group by cast(`p`.`payment_date` as date) order by `payment_date` desc */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
+-- Final view structure for view `view_logs_list`
+--
+
+/*!50001 DROP VIEW IF EXISTS `view_logs_list`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
+/*!50001 VIEW `view_logs_list` AS select `eel`.`log_id` AS `log_id`,`eel`.`log_status` AS `log_status`,`eel`.`time_in` AS `time_in`,`eel`.`time_out` AS `time_out`,`eel`.`total_duration` AS `total_duration`,`eel`.`parking_fee` AS `parking_fee`,`v`.`vehicle_id` AS `vehicle_id`,`v`.`plate_number` AS `plate_number`,`v`.`vehicle_type` AS `vehicle_type`,`u`.`user_id` AS `user_id`,`u`.`user_code` AS `user_code`,concat(`u`.`firstname`,' ',`u`.`lastname`) AS `owner_name`,`u`.`contact_number` AS `contact_number`,`ps`.`slot_id` AS `slot_id`,`ps`.`slot_number` AS `slot_number`,`ps`.`location_area` AS `location_area`,`p`.`payment_id` AS `payment_id`,`p`.`amount` AS `payment_amount`,`p`.`payment_date` AS `payment_date`,`p`.`method` AS `payment_method`,`p`.`receipt_number` AS `receipt_number`,`eel`.`reservation_id` AS `reservation_id` from ((((`entry_exit_logs` `eel` join `vehicle` `v` on((`eel`.`vehicle_id` = `v`.`vehicle_id`))) join `users` `u` on((`v`.`user_id` = `u`.`user_id`))) join `parking_slots` `ps` on((`eel`.`slot_id` = `ps`.`slot_id`))) left join `payments` `p` on((`eel`.`log_id` = `p`.`log_id`))) */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
+-- Final view structure for view `view_logs_today_stats`
+--
+
+/*!50001 DROP VIEW IF EXISTS `view_logs_today_stats`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
+/*!50001 VIEW `view_logs_today_stats` AS select count((case when (`entry_exit_logs`.`log_status` in ('in','out')) then 1 end)) AS `today_entries`,count((case when (`entry_exit_logs`.`log_status` = 'out') then 1 end)) AS `today_exits`,count((case when (`entry_exit_logs`.`log_status` = 'denied') then 1 end)) AS `today_denied`,coalesce(sum((case when (`entry_exit_logs`.`log_status` = 'out') then `entry_exit_logs`.`parking_fee` else 0 end)),0) AS `today_revenue` from `entry_exit_logs` where (cast(`entry_exit_logs`.`time_in` as date) = curdate()) */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
+-- Final view structure for view `view_monthly_parking_stats`
+--
+
+/*!50001 DROP VIEW IF EXISTS `view_monthly_parking_stats`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
+/*!50001 VIEW `view_monthly_parking_stats` AS select year(`eel`.`time_in`) AS `year`,month(`eel`.`time_in`) AS `month`,count(distinct `eel`.`log_id`) AS `total_parking_sessions`,count(distinct `eel`.`vehicle_id`) AS `unique_vehicles`,count(distinct `v`.`user_id`) AS `unique_users`,sum(`eel`.`parking_fee`) AS `total_parking_fees`,avg(`eel`.`total_duration`) AS `avg_parking_duration` from (`entry_exit_logs` `eel` join `vehicle` `v` on((`eel`.`vehicle_id` = `v`.`vehicle_id`))) where (`eel`.`log_status` = 'out') group by year(`eel`.`time_in`),month(`eel`.`time_in`) order by `year` desc,`month` desc */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
+-- Final view structure for view `view_monthly_revenue_trend`
+--
+
+/*!50001 DROP VIEW IF EXISTS `view_monthly_revenue_trend`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
+/*!50001 VIEW `view_monthly_revenue_trend` AS select year(`p`.`payment_date`) AS `year`,month(`p`.`payment_date`) AS `month`,date_format(`p`.`payment_date`,'%b') AS `month_label`,concat(year(`p`.`payment_date`),'-',convert(lpad(month(`p`.`payment_date`),2,'0') using utf8mb4)) AS `yearmonth`,coalesce(sum(`p`.`amount`),0) AS `total_revenue`,count(distinct `p`.`payment_id`) AS `total_transactions` from `payments` `p` group by year(`p`.`payment_date`),month(`p`.`payment_date`),date_format(`p`.`payment_date`,'%b') order by `year` desc,`month` desc limit 7 */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
+-- Final view structure for view `view_reservation_stats_today`
+--
+
+/*!50001 DROP VIEW IF EXISTS `view_reservation_stats_today`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
+/*!50001 VIEW `view_reservation_stats_today` AS select count(0) AS `total_today`,sum((case when (`reservations`.`status` = 'active') then 1 else 0 end)) AS `pending`,sum((case when (`reservations`.`status` = 'completed') then 1 else 0 end)) AS `approved`,sum((case when ((`reservations`.`status` = 'cancelled') or (`reservations`.`status` = 'expired')) then 1 else 0 end)) AS `cancelled` from `reservations` where (cast(`reservations`.`time_reserved` as date) = curdate()) */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
+-- Final view structure for view `view_reservations_full`
+--
+
+/*!50001 DROP VIEW IF EXISTS `view_reservations_full`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
+/*!50001 VIEW `view_reservations_full` AS select `r`.`reservation_id` AS `reservation_id`,concat('RES-',convert(lpad(`r`.`reservation_id`,3,'0') using utf8mb4)) AS `ref_number`,`r`.`user_id` AS `user_id`,`u`.`user_code` AS `user_code`,`u`.`firstname` AS `firstname`,`u`.`lastname` AS `lastname`,concat(`u`.`firstname`,' ',`u`.`lastname`) AS `full_name`,`u`.`email` AS `email`,`u`.`contact_number` AS `contact_number`,`u`.`role` AS `user_role`,`u`.`profile_picture` AS `profile_picture`,`v`.`vehicle_id` AS `vehicle_id`,`v`.`plate_number` AS `plate_number`,`v`.`vehicle_type` AS `vehicle_type`,`ps`.`slot_id` AS `slot_id`,`ps`.`slot_number` AS `slot_number`,`ps`.`location_area` AS `location_area`,`r`.`time_reserved` AS `time_reserved`,`r`.`reservation_expiry` AS `reservation_expiry`,timestampdiff(MINUTE,`r`.`time_reserved`,`r`.`reservation_expiry`) AS `duration_minutes`,timestampdiff(MINUTE,now(),`r`.`reservation_expiry`) AS `minutes_until_expiry`,`r`.`status` AS `status`,(case when (cast(`r`.`time_reserved` as date) = curdate()) then 'Today' when (cast(`r`.`time_reserved` as date) = (curdate() - interval 1 day)) then 'Yesterday' else convert(date_format(`r`.`time_reserved`,'%b %d, %Y') using utf8mb4) end) AS `date_label`,time_format(`r`.`time_reserved`,'%h:%i %p') AS `time_label` from (((`reservations` `r` join `users` `u` on((`r`.`user_id` = `u`.`user_id`))) join `vehicle` `v` on((`v`.`vehicle_id` = (select `vehicle`.`vehicle_id` from `vehicle` where (`vehicle`.`user_id` = `r`.`user_id`) order by `vehicle`.`vehicle_id` desc limit 1)))) join `parking_slots` `ps` on((`r`.`slot_id` = `ps`.`slot_id`))) order by field(`r`.`status`,'active','completed','expired','cancelled'),`r`.`time_reserved` desc */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
+-- Final view structure for view `view_slot_availability`
+--
+
+/*!50001 DROP VIEW IF EXISTS `view_slot_availability`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
+/*!50001 VIEW `view_slot_availability` AS select `parking_slots`.`location_area` AS `location_area`,count(0) AS `total_slots`,sum((case when (`parking_slots`.`status` = 'available') then 1 else 0 end)) AS `available_slots`,sum((case when (`parking_slots`.`status` = 'occupied') then 1 else 0 end)) AS `occupied_slots`,sum((case when (`parking_slots`.`status` = 'reserved') then 1 else 0 end)) AS `reserved_slots`,round(((sum((case when (`parking_slots`.`status` = 'available') then 1 else 0 end)) / count(0)) * 100),2) AS `availability_percentage` from `parking_slots` group by `parking_slots`.`location_area` order by `parking_slots`.`location_area` */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
+-- Final view structure for view `view_staff_activity`
+--
+
+/*!50001 DROP VIEW IF EXISTS `view_staff_activity`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
+/*!50001 VIEW `view_staff_activity` AS select `users`.`user_id` AS `user_id`,`users`.`user_code` AS `user_code`,`users`.`firstname` AS `firstname`,`users`.`lastname` AS `lastname`,`users`.`email` AS `email`,`users`.`role` AS `role`,`users`.`status` AS `status`,`users`.`last_login` AS `last_login`,(to_days(now()) - to_days(`users`.`last_login`)) AS `days_since_last_login` from `users` where (`users`.`role` in ('staff','admin')) order by `users`.`last_login` desc */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
+-- Final view structure for view `view_user_statistics`
+--
+
+/*!50001 DROP VIEW IF EXISTS `view_user_statistics`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
+/*!50001 VIEW `view_user_statistics` AS select `u`.`user_id` AS `user_id`,`u`.`user_code` AS `user_code`,`u`.`firstname` AS `firstname`,`u`.`lastname` AS `lastname`,`u`.`email` AS `email`,`u`.`role` AS `role`,count(distinct `v`.`vehicle_id`) AS `total_vehicles`,count(distinct `r`.`reservation_id`) AS `total_reservations`,count(distinct `eel`.`log_id`) AS `total_parking_sessions`,coalesce(sum(`p`.`amount`),0) AS `total_amount_paid`,max(`eel`.`time_in`) AS `last_parking_date` from ((((`users` `u` left join `vehicle` `v` on((`u`.`user_id` = `v`.`user_id`))) left join `reservations` `r` on((`u`.`user_id` = `r`.`user_id`))) left join `entry_exit_logs` `eel` on((`v`.`vehicle_id` = `eel`.`vehicle_id`))) left join `payments` `p` on((`eel`.`log_id` = `p`.`log_id`))) group by `u`.`user_id`,`u`.`user_code`,`u`.`firstname`,`u`.`lastname`,`u`.`email`,`u`.`role` order by `u`.`user_id` */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
+-- Final view structure for view `view_users`
+--
+
+/*!50001 DROP VIEW IF EXISTS `view_users`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
+/*!50001 VIEW `view_users` AS select `u`.`user_id` AS `user_id`,`u`.`user_code` AS `user_code`,`u`.`firstname` AS `firstname`,`u`.`lastname` AS `lastname`,`u`.`email` AS `email`,`u`.`contact_number` AS `contact_number`,`u`.`role` AS `role`,`u`.`status` AS `status`,`u`.`last_login` AS `last_login`,`u`.`created_at` AS `created_at`,count(`v`.`vehicle_id`) AS `vehicle_count` from (`users` `u` left join `vehicle` `v` on((`v`.`user_id` = `u`.`user_id`))) group by `u`.`user_id`,`u`.`user_code`,`u`.`firstname`,`u`.`lastname`,`u`.`email`,`u`.`contact_number`,`u`.`role`,`u`.`status`,`u`.`last_login`,`u`.`created_at` */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
+-- Final view structure for view `view_vehicle_list`
+--
+
+/*!50001 DROP VIEW IF EXISTS `view_vehicle_list`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
+/*!50001 VIEW `view_vehicle_list` AS select `v`.`vehicle_id` AS `vehicle_id`,`v`.`plate_number` AS `plate_number`,`v`.`vehicle_type` AS `vehicle_type`,`u`.`user_id` AS `user_id`,`u`.`user_code` AS `user_code`,`u`.`firstname` AS `firstname`,`u`.`lastname` AS `lastname`,`u`.`role` AS `role`,(case when (`e`.`log_id` is not null) then 'inside' else 'outside' end) AS `parking_status`,`s`.`slot_number` AS `slot_number`,(select max(`entry_exit_logs`.`time_in`) from `entry_exit_logs` where (`entry_exit_logs`.`vehicle_id` = `v`.`vehicle_id`)) AS `last_seen` from (((`vehicle` `v` join `users` `u` on((`u`.`user_id` = `v`.`user_id`))) left join `entry_exit_logs` `e` on(((`e`.`vehicle_id` = `v`.`vehicle_id`) and (`e`.`log_status` = 'in')))) left join `parking_slots` `s` on((`s`.`slot_id` = `e`.`slot_id`))) */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
+-- Final view structure for view `view_vehicle_stats`
+--
+
+/*!50001 DROP VIEW IF EXISTS `view_vehicle_stats`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
+/*!50001 VIEW `view_vehicle_stats` AS select count(distinct `v`.`vehicle_id`) AS `total`,count(distinct (case when (`e`.`log_status` = 'in') then `e`.`vehicle_id` end)) AS `inside`,sum((case when (`v`.`vehicle_type` = 'car') then 1 else 0 end)) AS `cars`,sum((case when (`v`.`vehicle_type` = 'motorcycle') then 1 else 0 end)) AS `motorcycles` from (`vehicle` `v` left join `entry_exit_logs` `e` on(((`e`.`vehicle_id` = `v`.`vehicle_id`) and (`e`.`log_status` = 'in')))) */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2026-05-06 17:38:57
