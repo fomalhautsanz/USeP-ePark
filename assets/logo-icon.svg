@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Outer rounded square -->
+  <rect width="64" height="64" rx="14" fill="#5A1220"/>
+  <!-- Inner gold accent bar top -->
+  <rect x="0" y="0" width="64" height="6" rx="3" fill="#C9A84C"/>
+  <!-- EP lettermark -->
+  <text x="7" y="50" font-family="Georgia, serif" font-size="40" font-weight="900" fill="#C9A84C">e</text>
+  <text x="28" y="50" font-family="Georgia, serif" font-size="40" font-weight="900" fill="#FFFFFF">P</text>
+</svg>

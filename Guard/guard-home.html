@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ePark Guard – Home</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --maroon: #6B0F1A;
+      --maroon-dark: #4A0A12;
+      --maroon-light: #8B1A28;
+      --gold: #B8962E;
+      --gold-light: #D4AF50;
+      --cream: #F5EFE0;
+      --cream-input: #F0E8D8;
+      --bg: #F2EDE3;
+      --text-dark: #2C1810;
+      --text-muted: #7A6A5A;
+      --white: #FFFFFF;
+    }
+
+    body {
+      min-height: 100vh;
+      background: var(--bg);
+      font-family: 'Barlow', sans-serif;
+      color: var(--text-dark);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* HEADER */
+    .header {
+      background: var(--maroon);
+      padding: 0 1.5rem;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header-icon {
+      width: 40px; height: 40px;
+      background: var(--gold);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 14px; font-weight: 700;
+      color: var(--maroon-dark);
+      letter-spacing: 1px;
+    }
+
+    .header-title {
+      display: flex; flex-direction: column;
+    }
+    .header-title span:first-child {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 1.1rem; font-weight: 700;
+      color: var(--white); letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    .header-title span:last-child {
+      font-size: 0.65rem; color: rgba(255,255,255,0.55);
+      letter-spacing: 1px; text-transform: uppercase;
+    }
+
+    .header-right {
+      text-align: right;
+    }
+    .header-right .guard-name {
+      font-size: 0.85rem; font-weight: 600;
+      color: var(--white);
+    }
+    .header-right .on-duty {
+      font-size: 0.65rem; letter-spacing: 2px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+    }
+
+    /* CONTENT */
+    .content {
+      flex: 1;
+      padding: 1.75rem 1.5rem;
+      max-width: 560px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .greeting {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 1.8rem; font-weight: 700;
+      color: var(--maroon);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 1.5rem;
+    }
+
+    /* SLOTS CARD */
+    .slots-card {
+      background: var(--white);
+      border-radius: 16px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+
+    .slots-number {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 3rem; font-weight: 700;
+      color: var(--maroon);
+      line-height: 1;
+    }
+
+    .slots-info { flex: 1; }
+    .slots-info .slots-label {
+      font-weight: 600; font-size: 1rem;
+      color: var(--text-dark);
+    }
+    .slots-info .slots-detail {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-bottom: 0.6rem;
+    }
+
+    .slots-bar {
+      height: 7px; border-radius: 10px;
+      background: #E0D8CC;
+      overflow: hidden;
+    }
+    .slots-bar-fill {
+      height: 100%; border-radius: 10px;
+      background: #2E7D32;
+      transition: width 0.6s ease;
+    }
+
+    /* SECTION LABEL */
+    .section-label {
+      font-size: 0.68rem; font-weight: 600;
+      letter-spacing: 3px; text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+
+    /* ACTION BUTTONS */
+    .actions { display: flex; flex-direction: column; gap: 0.9rem; }
+
+    .action-btn {
+      border: none; cursor: pointer;
+      border-radius: 14px;
+      padding: 1.25rem 1.5rem;
+      display: flex; align-items: center; gap: 1rem;
+      text-align: left;
+      transition: transform 0.15s, filter 0.15s;
+      text-decoration: none;
+    }
+    .action-btn:active { transform: scale(0.98); filter: brightness(0.95); }
+
+    /* Scan – full maroon */
+    .action-btn.scan {
+      background: var(--maroon);
+      color: var(--white);
+    }
+
+    /* Status – white card */
+    .action-btn.status {
+      background: var(--white);
+      color: var(--text-dark);
+    }
+
+    /* Logout – white card with red tint text */
+    .action-btn.logout {
+      background: var(--white);
+      color: var(--text-dark);
+    }
+
+    .action-icon {
+      width: 52px; height: 52px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .scan .action-icon { background: rgba(255,255,255,0.15); }
+    .status .action-icon { background: var(--cream-input); }
+    .logout .action-icon { background: #FDECEA; }
+
+    .action-icon svg { width: 24px; height: 24px; }
+
+    .action-text { flex: 1; }
+    .action-text .action-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 1.2rem; font-weight: 700;
+      letter-spacing: 2px; text-transform: uppercase;
+    }
+    .scan .action-title { color: var(--white); }
+    .status .action-title { color: var(--text-dark); }
+    .logout .action-title { color: #C62828; }
+
+    .action-text .action-desc {
+      font-size: 0.8rem; margin-top: 2px;
+    }
+    .scan .action-desc { color: rgba(255,255,255,0.65); }
+    .status .action-desc { color: var(--text-muted); }
+    .logout .action-desc { color: var(--text-muted); }
+
+    .action-arrow {
+      opacity: 0.4;
+    }
+    .action-arrow svg { width: 18px; height: 18px; }
+    .scan .action-arrow { opacity: 0.6; }
+
+    /* BOTTOM NAV */
+    .bottom-nav {
+      background: var(--maroon);
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      flex-shrink: 0;
+    }
+
+    .nav-item {
+      display: flex; flex-direction: column;
+      align-items: center; gap: 3px;
+      color: rgba(255,255,255,0.45);
+      cursor: pointer;
+      transition: color 0.2s;
+      text-decoration: none;
+      padding: 4px 16px;
+    }
+    .nav-item.active { color: var(--gold); }
+    .nav-item svg { width: 20px; height: 20px; }
+    .nav-item span { font-size: 0.6rem; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 600; }
+
+    /* LOGOUT MODAL */
+    .modal-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 100;
+      align-items: center; justify-content: center;
+    }
+    .modal-overlay.show { display: flex; }
+
+    .modal {
+      background: var(--white);
+      border-radius: 18px;
+      padding: 2rem;
+      max-width: 320px;
+      width: 90%;
+      text-align: center;
+    }
+    .modal h3 {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 1.4rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 2px;
+      color: var(--maroon); margin-bottom: 0.5rem;
+    }
+    .modal p { font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1.5rem; }
+    .modal-btns { display: flex; gap: 0.75rem; }
+    .modal-btns button {
+      flex: 1; padding: 12px; border-radius: 10px;
+      font-family: 'Barlow', sans-serif;
+      font-size: 0.9rem; font-weight: 600;
+      cursor: pointer; border: none;
+      transition: filter 0.2s;
+    }
+    .modal-btns button:hover { filter: brightness(0.93); }
+    .btn-cancel { background: var(--cream-input); color: var(--text-dark); }
+    .btn-confirm { background: var(--maroon); color: var(--white); }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-left">
+      <div class="header-icon">EP</div>
+      <div class="header-title">
+        <span>ePark</span>
+        <span>Guard Panel</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="guard-name" id="guardName">Guard</div>
+      <div class="on-duty">On Duty</div>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+    <div class="greeting" id="greetingName">Welcome, Guard.</div>
+
+    <!-- SLOTS -->
+    <div class="slots-card">
+      <div class="slots-number" id="slotsAvailable">–</div>
+      <div class="slots-info">
+        <div class="slots-label">Slots Available</div>
+        <div class="slots-detail" id="slotsDetail">Loading...</div>
+        <div class="slots-bar">
+          <div class="slots-bar-fill" id="slotsBar" style="width: 0%"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-label">Quick Actions</div>
+
+    <div class="actions">
+
+      <!-- SCAN -->
+      <a class="action-btn scan" href="guard-scan.html">
+        <div class="action-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="5" height="5" rx="1"/><rect x="16" y="3" width="5" height="5" rx="1"/>
+            <rect x="3" y="16" width="5" height="5" rx="1"/>
+            <path d="M21 16h-3v3"/><path d="M21 21v.01"/><path d="M12 7v3h3"/><path d="M7 12h-.01"/><path d="M3 12h3v.5"/><path d="M12 3v.01"/><path d="M12 16v1"/><path d="M12 21v-3"/>
+          </svg>
+        </div>
+        <div class="action-text">
+          <div class="action-title">Scan QR Code</div>
+          <div class="action-desc">Tap to scan vehicle entry or exit</div>
+        </div>
+        <div class="action-arrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </a>
+
+      <!-- STATUS -->
+      <a class="action-btn status" href="guard-status.html">
+        <div class="action-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#B8962E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/>
+            <line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>
+          </svg>
+        </div>
+        <div class="action-text">
+          <div class="action-title">Status / Inside</div>
+          <div class="action-desc">Vehicles currently parked</div>
+        </div>
+        <div class="action-arrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#7A6A5A" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </a>
+
+      <!-- LOGOUT -->
+      <button class="action-btn logout" onclick="showLogout()">
+        <div class="action-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#C62828" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+            <polyline points="16 17 21 12 16 7"/>
+            <line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+        </div>
+        <div class="action-text">
+          <div class="action-title">Log Out</div>
+          <div class="action-desc">End shift &amp; sign out</div>
+        </div>
+        <div class="action-arrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#7A6A5A" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </button>
+
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <div class="bottom-nav">
+    <a class="nav-item active" href="guard-home.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span>Home</span>
+    </a>
+    <a class="nav-item" href="guard-scan.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="5" height="5" rx="1"/><rect x="16" y="3" width="5" height="5" rx="1"/><rect x="3" y="16" width="5" height="5" rx="1"/><path d="M21 16h-3v3"/><path d="M21 21v.01"/></svg>
+      <span>Scan</span>
+    </a>
+    <a class="nav-item" href="guard-status.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+      <span>List</span>
+    </a>
+    <a class="nav-item" href="#" onclick="showLogout();return false;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      <span>Account</span>
+    </a>
+  </div>
+
+  <!-- LOGOUT MODAL -->
+  <div class="modal-overlay" id="logoutModal">
+    <div class="modal">
+      <h3>Log Out</h3>
+      <p>Are you sure you want to end your shift and sign out?</p>
+      <div class="modal-btns">
+        <button class="btn-cancel" onclick="hideLogout()">Cancel</button>
+        <button class="btn-confirm" onclick="doLogout()">Sign Out</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Auth guard
+    const guardName = sessionStorage.getItem('guard_name');
+    if (!guardName) {
+      window.location.href = 'guard-login.html';
+    } else {
+      document.getElementById('guardName').textContent = 'Guard ' + guardName;
+      document.getElementById('greetingName').textContent = 'Guard ' + guardName.toUpperCase() + '.';
+    }
+
+    // Load slot data
+    async function loadSlots() {
+      try {
+        const res = await fetch('backend/guard-slots.php');
+        const data = await res.json();
+        const available = data.available ?? '–';
+        const occupied  = data.occupied  ?? 0;
+        const total     = data.total     ?? 50;
+        document.getElementById('slotsAvailable').textContent = available;
+        document.getElementById('slotsDetail').textContent = occupied + ' occupied · ' + total + ' total';
+        const pct = total > 0 ? Math.round((occupied / total) * 100) : 0;
+        document.getElementById('slotsBar').style.width = pct + '%';
+        // Color bar: green < 70%, orange < 90%, red otherwise
+        const bar = document.getElementById('slotsBar');
+        bar.style.background = pct < 70 ? '#2E7D32' : pct < 90 ? '#E65100' : '#C62828';
+      } catch (e) {
+        document.getElementById('slotsDetail').textContent = 'Could not load slot data';
+      }
+    }
+    loadSlots();
+
+    function showLogout() { document.getElementById('logoutModal').classList.add('show'); }
+    function hideLogout() { document.getElementById('logoutModal').classList.remove('show'); }
+
+    async function doLogout() {
+      try {
+        await fetch('backend/guard-logout.php', { method: 'POST' });
+      } catch(e) {}
+      sessionStorage.clear();
+      window.location.href = 'guard-login.html';
+    }
+  </script>
+</body>
+</html>
