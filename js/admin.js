@@ -505,7 +505,7 @@ function loadSessionUser() {
         .then(res => res.json())
         .then(data => {
             if (data.error) {
-                window.location.href = "http://localhost:8000/Login/login.html";
+                window.location.href = "http://localhost/USeP-ePark-main/Login/login.html";
                 return;
             }
             const nameEl   = document.querySelector(".topbar-user-name");
@@ -517,7 +517,7 @@ function loadSessionUser() {
             if (avatarEl) avatarEl.src = `../assets/avatars/avatar-${data.role}.svg`;
         })
         .catch(() => {
-            window.location.href = "http://localhost:8000/Login/login.html";
+            window.location.href = "http://localhost/USeP-ePark-main/Login/login.html";
         });
 }
 
@@ -528,10 +528,10 @@ function initLogout() {
     logoutBtn.addEventListener("click", () => {
         fetch("/Login/backend/auth/logout.php")
             .then(() => {
-                window.location.href = "http://localhost:8000/Login/login.html";
+                window.location.href = "http://localhost/USeP-ePark-main/Login/login.html";
             })
             .catch(() => {
-                window.location.href = "http://localhost:8000/Login/login.html";
+                window.location.href = "http://localhost/USeP-ePark-main/Login/login.html";
             });
     });
 }

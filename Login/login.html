@@ -89,23 +89,7 @@
     letter-spacing: -5px;
     pointer-events: none;
   }
-  .login-logo {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-  }
-  .login-logo-mark {
-    width: 44px; height: 44px;
-    background: var(--gold);
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 20px;
-    color: var(--maroon-dark);
-    letter-spacing: 0.5px;
-  }
+  .login-logo { display: flex; align-items: center; gap: 14px; }
   .login-logo-text strong {
     display: block;
     font-family: 'Bebas Neue', sans-serif;
@@ -120,10 +104,7 @@
     text-transform: uppercase;
     letter-spacing: 1.2px;
   }
-  .login-headline {
-    position: relative;
-    z-index: 1;
-  }
+  .login-headline { position: relative; z-index: 1; }
   .login-headline h1 {
     font-family: 'Bebas Neue', sans-serif;
     font-size: 52px;
@@ -139,12 +120,7 @@
     line-height: 1.7;
     max-width: 260px;
   }
-  .login-stats {
-    display: flex;
-    gap: 28px;
-    position: relative;
-    z-index: 1;
-  }
+  .login-stats { display: flex; gap: 28px; position: relative; z-index: 1; }
   .login-stat-val {
     font-family: 'Bebas Neue', sans-serif;
     font-size: 28px;
@@ -152,7 +128,6 @@
     line-height: 1;
   }
   .login-stat-label { font-size: 11px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.8px; margin-top: 2px; }
-
   .login-right {
     background: var(--bg-card);
     width: 380px;
@@ -169,11 +144,7 @@
     color: var(--maroon);
     margin-bottom: 6px;
   }
-  .login-right .sub {
-    font-size: 13px;
-    color: var(--text-muted);
-    margin-bottom: 32px;
-  }
+  .login-right .sub { font-size: 13px; color: var(--text-muted); margin-bottom: 32px; }
   .form-group { margin-bottom: 18px; }
   .form-label {
     display: block;
@@ -184,17 +155,8 @@
     color: var(--text-secondary);
     margin-bottom: 7px;
   }
-  .input-wrap {
-    position: relative;
-    display: flex;
-    align-items: center;
-  }
-  .input-icon {
-    position: absolute;
-    left: 12px;
-    color: var(--text-muted);
-    display: flex;
-  }
+  .input-wrap { position: relative; display: flex; align-items: center; }
+  .input-icon { position: absolute; left: 12px; color: var(--text-muted); display: flex; }
   .input-icon svg { width: 16px; height: 16px; }
   .form-control {
     width: 100%;
@@ -264,20 +226,14 @@
   .btn-login:hover { background: var(--maroon-dark); }
   .btn-login:active { transform: scale(0.99); }
   .btn-login svg { width: 16px; height: 16px; }
-  .login-divider {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin: 22px 0;
+  .register-link {
+    text-align: center;
+    font-size: 13px;
     color: var(--text-muted);
-    font-size: 12px;
+    margin-top: 16px;
   }
-  .login-divider::before, .login-divider::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--border);
-  }
+  .register-link a { color: var(--maroon); font-weight: 600; text-decoration: none; }
+  .register-link a:hover { color: var(--maroon-light); text-decoration: underline; }
   .login-footer {
     text-align: center;
     font-size: 11.5px;
@@ -297,23 +253,10 @@
     align-items: center;
     gap: 8px;
   }
-
-  
-  /* ── REGISTER LINK ── */
-  .register-link {
-    text-align: center;
-    font-size: 13px;
-    color: var(--text-muted);
-    margin-top: 16px;
-  }
-  .register-link a { color: var(--maroon); font-weight: 600; text-decoration: none; }
-  .register-link a:hover { color: var(--maroon-light); text-decoration: underline; }
-
   .error-msg svg { width: 14px; height: 14px; flex-shrink: 0; }
-
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+    to   { opacity: 1; transform: translateY(0); }
   }
   @media (max-width: 700px) {
     .login-left { display: none; }
@@ -325,6 +268,8 @@
 <body>
 <div class="bg-pattern"></div>
 <div class="login-wrap">
+
+  <!-- ── LEFT PANEL ── -->
   <div class="login-left">
     <div class="login-logo">
       <img src="../assets/logo-icon.svg" alt="ePark" style="width:44px;height:44px;border-radius:10px;object-fit:cover;">
@@ -352,33 +297,39 @@
     </div>
   </div>
 
+  <!-- ── RIGHT PANEL ── -->
   <div class="login-right">
     <h2>Login</h2>
     <p class="sub">Sign in to access your account</p>
 
     <div class="error-msg" id="errorMsg">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-      Invalid username or password.
+      <span id="errorText">Invalid email or password.</span>
     </div>
 
+    <!-- FIX: changed label + field from "username" to "email" -->
     <div class="form-group">
-      <label class="form-label">Username</label>
+      <label class="form-label" for="email">Email</label>
       <div class="input-wrap">
         <span class="input-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <!-- mail icon -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 7l10 7 10-7"/></svg>
         </span>
-        <input type="text" class="form-control" id="username" placeholder="Enter your username">
+        <!-- FIX: id="email" name="email" type="email" to match login.php $_POST['email'] -->
+        <input type="email" class="form-control" id="email" name="email"
+               placeholder="Enter your email address" autocomplete="email">
       </div>
     </div>
 
     <div class="form-group">
-      <label class="form-label">Password</label>
+      <label class="form-label" for="password">Password</label>
       <div class="input-wrap">
         <span class="input-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
         </span>
-        <input type="password" class="form-control" id="password" placeholder="Enter your password">
-        <button class="input-toggle" id="togglePw" type="button">
+        <input type="password" class="form-control" id="password" name="password"
+               placeholder="Enter your password" autocomplete="current-password">
+        <button class="input-toggle" id="togglePw" type="button" onclick="togglePassword()">
           <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
         </button>
       </div>
@@ -396,7 +347,6 @@
       Sign In
     </button>
 
-     <!-- ── REGISTER LINK — users only ── -->
     <div class="register-link">
       Don't have an account? <a href="../User/register.php">Register here</a>
     </div>
@@ -406,9 +356,85 @@
       <a href="#">USeP ePark System v1.0</a>
     </div>
   </div>
+
 </div>
 
-<script src="js/login.js"></script>
- 
+<script>
+  function togglePassword() {
+    const input = document.getElementById('password');
+    const icon  = document.getElementById('eyeIcon');
+    if (input.type === 'password') {
+      input.type   = 'text';
+      icon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>';
+    } else {
+      input.type   = 'password';
+      icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+    }
+  }
+
+  function showError(msg) {
+    const box  = document.getElementById('errorMsg');
+    const text = document.getElementById('errorText');
+    text.textContent = msg;
+    box.style.display = 'flex';
+  }
+
+  function hideError() {
+    document.getElementById('errorMsg').style.display = 'none';
+  }
+
+  const SVG_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>`;
+
+  function resetBtn() {
+    const btn = document.getElementById('loginBtn');
+    btn.disabled = false;
+    btn.innerHTML = SVG_ICON + ' Sign In';
+  }
+
+  function handleLogin() {
+    hideError();
+
+    // FIX: reads from #email now, not #username
+    const email    = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const btn      = document.getElementById('loginBtn');
+
+    if (!email || !password) {
+      showError('Please enter your email and password.');
+      return;
+    }
+
+    btn.disabled  = true;
+    btn.innerHTML = SVG_ICON + ' Signing in…';
+
+    const formData = new FormData();
+    // FIX: appends as 'email' to match $_POST['email'] in login.php
+    formData.append('email',    email);
+    formData.append('password', password);
+
+    // FIX: corrected path — login.php is at backend/auth/login.php
+    fetch('backend/auth/login.php', {
+      method: 'POST',
+      body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        window.location.href = data.redirect;
+      } else {
+        showError(data.message || 'Invalid email or password.');
+        resetBtn();
+      }
+    })
+    .catch(() => {
+      showError('Server error. Please try again.');
+      resetBtn();
+    });
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter') handleLogin();
+  });
+</script>
 </body>
 </html>

@@ -3,11 +3,11 @@
 document.addEventListener('DOMContentLoaded', () => {
 
   // Load session user into topbar
-fetch('/Login/backend/auth/session_user.php')
+fetch('/USeP-ePark-main/Login/backend/auth/session_user.php')
     .then(res => res.json())
     .then(data => {
         if (data.error) {
-            window.location.href = 'http://localhost:8000/Login/login.html';
+            window.location.href = 'http://localhost/USeP-ePark-main/Login/login.html';
             return;
         }
         const nameEl   = document.querySelector('.topbar-user-name');
@@ -16,19 +16,22 @@ fetch('/Login/backend/auth/session_user.php')
 
         if (nameEl)   nameEl.textContent = data.firstname + ' ' + data.lastname;
         if (roleEl)   roleEl.textContent = data.role.charAt(0).toUpperCase() + data.role.slice(1);
-        if (avatarEl) avatarEl.src = `/assets/avatars/avatar-${data.role}.svg`;
+        // FIX: use actual profile picture if available, otherwise fall back to default image
+        if (avatarEl) avatarEl.src = data.profile_picture
+            ? `/USeP-ePark-main/User/assets/uploads/${data.profile_picture}`
+            : `/USeP-ePark-main/User/assets/img/userDefaultProfile.jpg`;
     })
     .catch(() => {
-        window.location.href = 'http://localhost:8000/Login/login.html';
+        window.location.href = 'http://localhost/USeP-ePark-main/Login/login.html';
     });
 
 // Logout
 const logoutBtn = document.getElementById('logoutBtn');
 if (logoutBtn) {
     logoutBtn.addEventListener('click', () => {
-        fetch('/Login/backend/auth/logout.php')
+        fetch('/USeP-ePark-main/Login/backend/auth/logout.php')
             .then(() => {
-                window.location.href = 'http://localhost:8000/Login/login.html';
+                window.location.href = 'http://localhost/USeP-ePark-main/Login/login.html';
             });
     });
 }
