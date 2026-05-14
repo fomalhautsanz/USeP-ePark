@@ -108,6 +108,7 @@ if (!$outStmt) {
 
 $result = $outStmt->fetch_assoc();
 $outStmt->close();
+<<<<<<< HEAD
 
 
 // ── Respond ───────────────────────────────────────────────────────────────────
@@ -138,6 +139,12 @@ if ($result && str_starts_with($result['message'], 'SUCCESS')) {
         }
     }
 
+=======
+$conn->close();
+
+// ── Respond ───────────────────────────────────────────────────────────────────
+if ($result && str_starts_with($result['message'], 'SUCCESS')) {
+>>>>>>> master
     echo json_encode(['success' => true]);
 } else {
     $errMsg = isset($result['message'])
@@ -146,7 +153,10 @@ if ($result && str_starts_with($result['message'], 'SUCCESS')) {
     error_log("sp_update_user_full error: " . ($result['message'] ?? 'null'));
     echo json_encode(['success' => false, 'message' => $errMsg]);
 }
+<<<<<<< HEAD
 
 $conn->close();
 
+=======
+>>>>>>> master
 ?>

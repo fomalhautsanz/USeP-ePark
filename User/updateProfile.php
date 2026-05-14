@@ -19,7 +19,11 @@ $email        = trim($_POST['email'] ?? '');
 $contact      = trim($_POST['contact_number'] ?? '');
 $gender       = trim($_POST['gender'] ?? '');
 $birthdate    = trim($_POST['birthdate'] ?? '') ?: null;
+<<<<<<< HEAD
 $vehicle_type = strtolower(trim($_POST['vehicle_type'] ?? ''));
+=======
+$vehicle_type = trim($_POST['vehicle_type'] ?? '');
+>>>>>>> master
 $plate_number = strtoupper(trim($_POST['plate_number'] ?? ''));
 
 // ── Handle profile picture upload ──
@@ -67,11 +71,17 @@ mysqli_stmt_close($stmt);
 
 // ── Update vehicle table ──
 $stmt2 = mysqli_prepare($conn,
+<<<<<<< HEAD
     "INSERT INTO vehicle (user_id, vehicle_type, plate_number) 
      VALUES (?, ?, ?)
      ON DUPLICATE KEY UPDATE vehicle_type=VALUES(vehicle_type), plate_number=VALUES(plate_number)"
 );
 mysqli_stmt_bind_param($stmt2, 'iss', $user_id, $vehicle_type, $plate_number);
+=======
+    "UPDATE vehicle SET vehicle_type=?, plate_number=? WHERE user_id=?"
+);
+mysqli_stmt_bind_param($stmt2, 'ssi', $vehicle_type, $plate_number, $user_id);
+>>>>>>> master
 mysqli_stmt_execute($stmt2);
 mysqli_stmt_close($stmt2);
 

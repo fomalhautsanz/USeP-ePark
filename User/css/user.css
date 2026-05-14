@@ -1106,6 +1106,69 @@ select.form-control {
 .receipt-card .receipt-box hr { margin: 10px 0; border: none; border-top: 1px dashed var(--border); }
 .receipt-footer { font-size: 12px; color: var(--text-muted); margin-top: 10px; }
 
+<<<<<<< HEAD
+=======
+.transaction-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-height: 520px;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+.transaction-list::-webkit-scrollbar {
+  width: 8px;
+}
+.transaction-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+.transaction-list::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.12);
+  border-radius: 999px;
+}
+.transaction-card {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 16px;
+  background: #ffffff;
+  transition: var(--transition);
+}
+.transaction-card:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+.transaction-card-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.transaction-card-badges {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.transaction-number {
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.transaction-meta-text,
+.transaction-view,
+.transaction-amount {
+  color: var(--text-secondary);
+}
+.transaction-amount {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--maroon-dark);
+}
+
+>>>>>>> master
 .qr-placeholder {
   width: 120px;
   height: 120px;
@@ -1137,4 +1200,460 @@ select.form-control {
   .topbar { padding: 0 16px; }
   .stats-grid { grid-template-columns: 1fr 1fr; }
   .topbar-search { display: none; }
+}
+
+/* ── PARKING HISTORY ── */
+
+.history-table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.history-card-body {
+  padding: 0;
+}
+
+.history-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.history-table-wrapper table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 700px;
+}
+
+.history-table-wrapper thead {
+  background: #faf7f2;
+}
+
+.history-table-wrapper th {
+  padding: 16px 20px;
+  text-align: left;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+}
+
+.history-table-wrapper td {
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+.history-table-wrapper tbody tr {
+  transition: var(--transition);
+}
+
+.history-table-wrapper tbody tr:hover {
+  background: rgba(123, 28, 46, 0.03);
+}
+
+.history-table-wrapper tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.history-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .5px;
+}
+
+.history-status.completed {
+  background: var(--info-bg);
+  color: var(--info);
+}
+
+.history-status.late {
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+
+.history-status.parked {
+  background: var(--success-bg);
+  color: var(--success);
+}
+
+.history-layout {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.history-sidebar,
+.history-main {
+  overflow: hidden;
+}
+
+.reservation-history-list {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-height: 720px;
+  overflow-y: auto;
+}
+
+.reservation-tab {
+  background: #faf7f2;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 18px;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.reservation-tab:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--gold);
+}
+
+.reservation-tab.active {
+  background: rgba(201,168,76,0.12);
+  border-color: var(--gold);
+}
+
+.reservation-tab-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.reservation-slot {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--maroon);
+  font-family: 'Bebas Neue', sans-serif;
+  letter-spacing: 1px;
+}
+
+.reservation-status {
+  padding: 7px 12px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.active-status {
+  background: var(--success-bg);
+  color: var(--success);
+}
+
+.expired-status {
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+
+.cancelled-status {
+  background: #ececec;
+  color: #7b7b7b;
+}
+
+.reservation-tab-bottom {
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.no-reservation {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 220px;
+  border: 2px dashed var(--border);
+  border-radius: 18px;
+  color: var(--text-muted);
+  font-size: 15px;
+}
+
+.hidden {
+  display: none;
+}
+
+.payment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.payment-subtitle {
+  margin-top: 4px;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.payment-body {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.payment-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.payment-item {
+  background: #faf7f2;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 18px;
+}
+
+.payment-item span {
+  display: block;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+.payment-item strong {
+  font-size: 20px;
+  color: var(--maroon);
+}
+
+.payment-success {
+  color: var(--success) !important;
+}
+
+.receipt-preview {
+  border: 2px dashed var(--border);
+  border-radius: 18px;
+  padding: 28px;
+  text-align: center;
+  max-width: 420px;
+  margin: 0 auto;
+  background: white;
+}
+
+.receipt-preview h2 {
+  color: var(--maroon);
+  margin-bottom: 18px;
+}
+
+.receipt-preview p {
+  margin-bottom: 12px;
+  color: var(--text-secondary);
+}
+
+.receipt-preview hr {
+  margin: 18px 0;
+  border: none;
+  border-top: 1px dashed var(--border);
+}
+
+@media (max-width: 1200px) {
+
+  .history-layout {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+@media (max-width: 800px) {
+
+  .payment-grid {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+.history-layout {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.reservation-history-list {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-height: 700px;
+  overflow-y: auto;
+}
+
+.reservation-tab {
+  background: #faf7f2;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 18px;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.reservation-tab:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--gold);
+}
+
+.reservation-tab.active {
+  background: rgba(201,168,76,0.12);
+  border-color: var(--gold);
+}
+
+.reservation-tab-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.reservation-slot {
+  font-size: 30px;
+  font-family: 'Bebas Neue', sans-serif;
+  color: var(--maroon);
+  letter-spacing: 1px;
+}
+
+.reservation-status {
+  padding: 7px 12px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.active-status {
+  background: var(--success-bg);
+  color: var(--success);
+}
+
+.expired-status {
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+
+.cancelled-status {
+  background: #ececec;
+  color: #777;
+}
+
+.reservation-tab-bottom {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.no-reservation {
+  min-height: 220px;
+  border: 2px dashed var(--border);
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+}
+
+.hidden {
+  display: none;
+}
+
+.payment-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+}
+
+.payment-item {
+  background: #faf7f2;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 20px;
+  transition: var(--transition);
+}
+
+.payment-item:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.payment-item span {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+}
+
+.payment-item strong {
+  font-size: 22px;
+  color: var(--maroon);
+}
+
+.payment-fee-card {
+  background: rgba(201,168,76,0.12);
+  border-color: var(--gold);
+}
+
+.paid-status {
+  background: var(--success-bg);
+  color: var(--success);
+}
+
+.payment-transaction-card {
+  background: rgba(45,122,79,0.08);
+  border-color: rgba(45,122,79,0.25);
+}
+
+.transaction-link {
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.transaction-link:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+
+.transaction-view {
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--maroon);
+  font-weight: 600;
+}
+
+@media (max-width: 1100px) {
+
+  .history-layout {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+@media (max-width: 700px) {
+
+  .payment-grid {
+    grid-template-columns: 1fr;
+  }
+
 }
