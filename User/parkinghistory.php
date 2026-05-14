@@ -1,8 +1,10 @@
 <?php
 session_start();
-include __DIR__ . '/config/database.php';
+include '../Admin/config/database.php';
 
 $user_id = $_SESSION['user_id'];
+
+var_dump($_SESSION['user_id']);
 
 $sql = "SELECT * FROM view_logs_list
         WHERE user_id = ?
@@ -13,6 +15,7 @@ mysqli_stmt_bind_param($stmt, "i", $user_id);
 mysqli_stmt_execute($stmt);
 
 $result = mysqli_stmt_get_result($stmt);
+
 ?>
 
 
@@ -55,7 +58,7 @@ $result = mysqli_stmt_get_result($stmt);
         <span class="nav-label">Profile</span>
       </a>
 
-      <a class="nav-item" href="parkingreservations.html" data-tooltip="Parking Reservations">
+      <a class="nav-item" href="parkingreservations.php" data-tooltip="Parking Reservations">
         <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21 8-2 2-1.5-3.7A2 2 0 0 0 15.646 5H8.4a2 2 0 0 0-1.903 1.257L5 10 3 8"/><path d="M7 14h.01"/><path d="M17 14h.01"/><rect width="18" height="8" x="3" y="10" rx="2"/><path d="M5 18v2"/><path d="M19 18v2"/></svg></span>
         <span class="nav-label">Parking Reservations</span>
       </a>

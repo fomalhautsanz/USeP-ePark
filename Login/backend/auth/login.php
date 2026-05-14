@@ -100,7 +100,7 @@ $_SESSION['gender']          = $user['gender']          ?? null;
 $_SESSION['birthdate']       = $user['birthdate']        ?? null;
 $_SESSION['plate_number']    = $user['plate_number']     ?? null;
 $_SESSION['vehicle_type']    = $user['vehicle_type']     ?? null;
-$_SESSION['qr_code']         = $user['qr_code']          ?? null;
+$_SESSION['qr_code'] = $row['user_code'];
 
 // ---------------------------------------------------------------
 // Redirect based on role
@@ -122,4 +122,5 @@ if (!$redirect) {
 }
 
 echo json_encode(['success' => true, 'redirect' => $redirect]);
+
 ?>

@@ -2,7 +2,7 @@
 session_start();
 
 if (!isset($_SESSION['user_id'])) {
-    header('Location: ../Login/login.html');
+    header('Location: http://localhost/USeP-ePark-main/Login/login.html');
     exit;
 }
 
@@ -20,9 +20,7 @@ $contact_number = $_SESSION['contact_number'];
 // FIX #1: vehicle_type and plate_number come from the `vehicle` table (not `users`),
 // so they may not be set in session if your login script doesn't join that table.
 // Added null coalescing fallbacks to prevent undefined index warnings.
-// For display purposes only:
 $vehicle_type = $_SESSION['vehicle_type'] ?? 'Not set';
-$display_vehicle = $vehicle_type !== 'Not set' ? ucfirst($vehicle_type) : 'Not set';
 $plate_number = $_SESSION['plate_number'] ?? 'Not set';
 
 $gender = $_SESSION['gender'] ?? null;
@@ -55,37 +53,37 @@ $birthdate = $_SESSION['birthdate'] ?? null;
 
       <a class="nav-item active" href="userDashboard.php" data-tooltip="Profile">
         <span class="nav-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20a6 6 0 0 0-12[...]
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20a6 6 0 0 0-12 0"/><circle cx="12" cy="10" r="4"/><circle cx="12" cy="12" r="10"/></svg>
         </span>
         <span class="nav-label">Profile</span>
       </a>
 
       <a class="nav-item" href="parkingreservations.php" data-tooltip="Parking Reservations">
         <span class="nav-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21 8-2 2-1.5-3.7A2[...]
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21 8-2 2-1.5-3.7A2 2 0 0 0 15.646 5H8.4a2 2 0 0 0-1.903 1.257L5 10 3 8"/><path d="M7 14h.01"/><path d="M17 14h.01"/><rect width="18" height="8" x="3" y="10" rx="2"/><path d="M5 18v2"/><path d="M19 18v2"/></svg>
         </span>
         <span class="nav-label">Parking Reservations</span>
       </a>
 
       <a class="nav-item" href="qr.php" data-tooltip="QR Code">
         <span class="nav-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-[...]
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M7 12h10"/></svg>
         </span>
         <span class="nav-label">QR Code</span>
       </a>
 
       <div class="nav-section-label">Account</div>
 
-      <a class="nav-item" href="parkinghistory.php" data-tooltip="Parking History">
+      <a class="nav-item" href="logs.php" data-tooltip="Parking History">
         <span class="nav-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22a2 2 0 0 1-2-2[...]
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/><path d="M16 22a4 4 0 0 0-8 0"/><circle cx="12" cy="15" r="3"/></svg>
         </span>
         <span class="nav-label">Parking History</span>
       </a>
 
       <a class="nav-item" href="transactions.php" data-tooltip="Transactions / Receipts">
         <span class="nav-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18"[...]
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2"/><path d="M3 11h3c.8 0 1.6.3 2.1.9l1.1.9c1.6 1.6 4.1 1.6 5.7 0l1.1-.9c.5-.5 1.3-.9 2.1-.9H21"/></svg>
         </span>
         <span class="nav-label">Transactions / Receipts</span>
       </a>
@@ -107,7 +105,7 @@ $birthdate = $_SESSION['birthdate'] ?? null;
       <h2 class="topbar-title">PROFILE</h2>
       <div class="topbar-spacer"></div>
       <button class="topbar-btn" title="Notifications">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="[...]
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
         <span class="topbar-notif-dot"></span>
       </button>
      <!-- FIX: wrapped topbar-user in a dropdown container for logout option on click -->
@@ -115,7 +113,7 @@ $birthdate = $_SESSION['birthdate'] ?? null;
       <div class="topbar-user" id="userDropdownToggle" style="cursor:pointer;">
         <div class="topbar-avatar">
           <!-- FIX: use session profile pic with default fallback instead of hardcoded guest SVG -->
-          <img src="<?php echo htmlspecialchars($pic); ?>" class="topbar-avatar" alt="User" style="width:30px;height:30px;border-radius:6px;object-fit:cover;" onerror="this.src='assets/img/userDe[...]
+          <img src="<?php echo htmlspecialchars($pic); ?>" class="topbar-avatar" alt="User" style="width:30px;height:30px;border-radius:6px;object-fit:cover;" onerror="this.src='assets/img/userDefaultProfile.jpg'">
         </div>
         <div class="topbar-user-info">
           <div class="topbar-user-name"><?php echo htmlspecialchars($firstname . ' ' . $lastname); ?></div>
@@ -124,9 +122,9 @@ $birthdate = $_SESSION['birthdate'] ?? null;
         </div>
       </div>
       <!-- dropdown menu -->
-      <div id="userDropdownMenu" style="display:none;position:absolute;right:0;top:calc(100% + 8px);background:#fff;border:1px solid var(--border);border-radius:10px;box-shadow:0 4px 16px rgba(0,[...]
-        <a href="../Login/backend/auth/logout.php" style="display:flex;align-items:center;gap:10px;padding:12px 16px;color:#6b0606;font-size:14px;font-weight:500;text-decoration:none;transition:b[...]
-          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><pat[...]
+      <div id="userDropdownMenu" style="display:none;position:absolute;right:0;top:calc(100% + 8px);background:#fff;border:1px solid var(--border);border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,0.10);min-width:160px;z-index:999;overflow:hidden;">
+        <a href="../Login/backend/auth/logout.php" style="display:flex;align-items:center;gap:10px;padding:12px 16px;color:#6b0606;font-size:14px;font-weight:500;text-decoration:none;transition:background 0.15s;" onmouseover="this.style.background='#faf0f0'" onmouseout="this.style.background='#fff'">
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
           Log Out
         </a>
       </div>
@@ -154,7 +152,7 @@ $birthdate = $_SESSION['birthdate'] ?? null;
             <?php if ($pic): ?>
               <img src="<?php echo htmlspecialchars($pic); ?>" style="width:150px;height:150px;border-radius:50%;object-fit:cover;flex-shrink:0;background:#c8c8c8;">
             <?php else: ?>
-              <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23c8c8c8'/%3E%3Ccircle cx='50' cy='38' r='22' [...]
+              <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23c8c8c8'/%3E%3Ccircle cx='50' cy='38' r='22' fill='%23fff'/%3E%3Cellipse cx='50' cy='85' rx='32' ry='24' fill='%23fff'/%3E%3C/svg%3E" style="width:80px;height:80px;border-radius:50%;object-fit:cover;flex-shrink:0;">
             <?php endif; ?>
             <div>
               <div style="font-size:18px;font-weight:700;color:var(--text-primary);line-height:1.2;"><?php echo htmlspecialchars($firstname . ' ' . $lastname); ?></div>
@@ -252,7 +250,7 @@ $birthdate = $_SESSION['birthdate'] ?? null;
               <div class="input-wrap">
                 <input type="password" id="currentPasswordInput" name="currentPasswordInput" placeholder=" ">
                 <button class="input-toggle" type="button" onclick="togglePw('currentPasswordInput')">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"[...]
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                 </button>
               </div>
 
@@ -260,7 +258,7 @@ $birthdate = $_SESSION['birthdate'] ?? null;
               <div class="input-wrap">
                 <input type="password" id="newPasswordInput" name="newPasswordInput" placeholder=" ">
                 <button class="input-toggle" type="button" onclick="togglePw('newPasswordInput')">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"[...]
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                 </button>
               </div>
 
@@ -268,7 +266,7 @@ $birthdate = $_SESSION['birthdate'] ?? null;
               <div class="input-wrap">
                 <input type="password" id="confirmPasswordInput" name="confirmPasswordInput" placeholder=" " required>
                 <button class="input-toggle" type="button" onclick="togglePw('confirmPasswordInput')">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"[...]
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                 </button>
               </div>
 
@@ -292,7 +290,7 @@ $birthdate = $_SESSION['birthdate'] ?? null;
                   <!-- FIX #5: href was a blank space (" ") which causes a broken navigation.
                        Changed to "#" as a safe placeholder until the real support URL is set. -->
                   <a href="#" id="ContactSupportLink">Contact Support
-                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="r[...]
+                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
                     </svg>
                   </a>

@@ -214,10 +214,10 @@ $qr_data  = json_encode([
 
 
 // FIX: $qr_data is already a JSON string from PHP, so pass it directly without wrapping in json_encode again
-const qrData = <?php echo $qr_data; ?>;
+const qrText = <?php echo json_encode($qr_data); ?>; // properly JS-escaped string
 
 new QRCode(document.getElementById('qrCanvas'), {
-    text:         JSON.stringify(qrData),
+    text:         qrText,   // already the JSON string guard-scan.php expects
     width:        250,
     height:       250,
     colorDark:    '#000000',

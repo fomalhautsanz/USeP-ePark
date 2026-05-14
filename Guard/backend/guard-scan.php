@@ -9,7 +9,7 @@
 // This file's only job: receive the JSON payload, call the procedure,
 // return the result as JSON.
 
-ini_set('display_errors', 0);
+ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
 include '../config/database.php';
@@ -22,15 +22,36 @@ if (!$conn) {
 
 // ── 1. Parse input ───────────────────────────────────────────────────────────
 $input    = json_decode(file_get_contents('php://input'), true);
-$qr_data  = trim($input['qr_data']  ?? '');
+$qr_raw   = trim($input['qr_data']  ?? '');
 $guard_id = intval($input['guard_id'] ?? 0);
 
-if (!$qr_data) {
+if (!$qr_raw) {
     echo json_encode(['success' => false, 'action' => 'error', 'message' => 'No QR data received.']);
     exit;
 }
 
-// ── 2. Call stored procedure ─────────────────────────────────────────────────
+// ── 2. Extract token from QR payload ────────────────────────────────────────
+// The QR encodes a JSON object: {"token":"abc123...","user_id":1,"plate_number":"CMD008"}
+// The stored procedure expects just the token string, not the full JSON blob.
+// FIX: parse the JSON and pull out the token before calling the procedure.
+$qr_decoded = json_decode($qr_raw, true);
+// $qr_decoded['token'] = the actual token string ✓
+$qr_data = trim($qr_decoded['token']);
+
+if (is_array($qr_decoded) && !empty($qr_decoded['token'])) {
+    // Normal path: QR contains a JSON object with a token field
+    $qr_data = trim($qr_decoded['token']);
+} else {
+    // Fallback: QR was encoded as a raw token string (old format)
+    $qr_data = $qr_raw;
+}
+
+if (empty($qr_data) || $qr_data === 'null') {
+    echo json_encode(['success' => false, 'action' => 'error', 'message' => 'Invalid QR code — missing token.']);
+    exit;
+}
+
+// ── 3. Call stored procedure ─────────────────────────────────────────────────
 $stmt = $conn->prepare("CALL sp_guard_process_scan(?, ?, @success, @action, @message, @plate, @vtype, @owner, @slot, @ts, @dur)");
 if (!$stmt) {
     error_log('[guard-scan] prepare failed: ' . $conn->error);
@@ -48,7 +69,7 @@ if (!$stmt->execute()) {
 }
 $stmt->close();
 
-// ── 3. Read OUT parameters ───────────────────────────────────────────────────
+// ── 4. Read OUT parameters ───────────────────────────────────────────────────
 $out = $conn->query("SELECT
     @success AS success,
     @action  AS action,
@@ -71,7 +92,7 @@ if (!$out) {
 $row = $out->fetch_assoc();
 $conn->close();
 
-// ── 4. Return response ───────────────────────────────────────────────────────
+// ── 5. Return response ───────────────────────────────────────────────────────
 echo json_encode([
     'success'      => (bool)(int)($row['success'] ?? 0),
     'action'       => $row['action']       ?? 'error',
