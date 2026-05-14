@@ -51,7 +51,7 @@ if ($_SESSION['role'] === 'customer') {
         <span class="nav-label">Reservations</span>
         <span class="nav-badge">3</span>
       </a>
-      <a class="nav-item" href="logs.html" data-tooltip="Entry / Exit Logs">
+      <a class="nav-item" href="logs.php" data-tooltip="Entry / Exit Logs">
         <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span>
         <span class="nav-label">Entry / Exit Logs</span>
       </a>
@@ -171,26 +171,26 @@ if ($_SESSION['role'] === 'customer') {
               <svg class="donut" id="donutSvg" viewBox="0 0 120 120"></svg>
               <div class="donut-legend">
                 <div class="donut-legend-item">
-                  <div class="donut-legend-color" style="background:#2D7A4F;"></div>
-                  <span class="donut-legend-label">Available</span>
-                  <span class="donut-legend-val">24</span>
+                    <div class="donut-legend-color" style="background:#2D7A4F;"></div>
+                    <span class="donut-legend-label">Available</span>
+                    <span class="donut-legend-val" id="legendAvailable">—</span>
                 </div>
                 <div class="donut-legend-item">
-                  <div class="donut-legend-color" style="background:#C0392B;"></div>
-                  <span class="donut-legend-label">Occupied</span>
-                  <span class="donut-legend-val">18</span>
+                    <div class="donut-legend-color" style="background:#C0392B;"></div>
+                    <span class="donut-legend-label">Occupied</span>
+                    <span class="donut-legend-val" id="legendOccupied">—</span>
                 </div>
                 <div class="donut-legend-item">
-                  <div class="donut-legend-color" style="background:#C9A84C;"></div>
-                  <span class="donut-legend-label">Reserved</span>
-                  <span class="donut-legend-val">6</span>
+                    <div class="donut-legend-color" style="background:#C9A84C;"></div>
+                    <span class="donut-legend-label">Reserved</span>
+                    <span class="donut-legend-val" id="legendReserved">—</span>
                 </div>
                 <div class="donut-legend-item">
-                  <div class="donut-legend-color" style="background:#A0A0A0;"></div>
-                  <span class="donut-legend-label">Maintenance</span>
-                  <span class="donut-legend-val">2</span>
+                    <div class="donut-legend-color" style="background:#A0A0A0;"></div>
+                    <span class="donut-legend-label">Maintenance</span>
+                    <span class="donut-legend-val" id="legendMaintenance">—</span>
                 </div>
-              </div>
+            </div>
             </div>
           </div>
         </div>

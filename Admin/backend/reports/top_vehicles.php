@@ -2,19 +2,18 @@
 ini_set('display_errors', 0);
 error_reporting(E_ALL);
 
-include "../../config/database.php";
+include '../../config/database.php';
 
 header('Content-Type: application/json');
 
 if (!$conn) {
-    echo json_encode(['success' => false, 'error' => 'Database connection failed']);
+    echo json_encode(['error' => 'Database connection failed']);
     exit;
 }
 
-// ============================================================================
-// Validate Input Parameters
-// ============================================================================
+// ── Input validation ──────────────────────────────────────────────────────
 
+// Filter by log_status — map frontend labels to DB values
 $hasFrom = isset($_GET['from']) && $_GET['from'] !== '';
 $hasTo   = isset($_GET['to'])   && $_GET['to']   !== '';
 $limit   = intval($_GET['limit'] ?? 5);
@@ -23,10 +22,6 @@ $limit   = intval($_GET['limit'] ?? 5);
 if ($limit < 1 || $limit > 50) {
     $limit = 5;
 }
-
-// ============================================================================
-// Helper Function
-// ============================================================================
 
 function isValidDate(string $date): bool {
     $d = DateTime::createFromFormat('Y-m-d', $date);
@@ -42,7 +37,7 @@ if (!$hasFrom && !$hasTo) {
     
     if (!$result) {
         error_log("Query failed: " . $conn->error);
-        echo json_encode(['success' => false, 'error' => 'System error']);
+        echo json_encode(['error' => 'System error']);
         exit;
     }
     
@@ -60,17 +55,12 @@ if (!$hasFrom && !$hasTo) {
     }
     
     $conn->close();
-    echo json_encode([
-        'success' => true,
-        'period' => 'current_month',
-        'count' => count($data),
-        'data' => $data
-    ]);
+    echo json_encode($data);
     exit;
 }
 
 // ============================================================================
-// Case 2: Date range provided — validate and use stored procedure
+// Case 2: Date range provided — validate and use query
 // ============================================================================
 
 if ($hasFrom && $hasTo) {
@@ -78,21 +68,14 @@ if ($hasFrom && $hasTo) {
     $dateTo   = trim($_GET['to']);
     
     if (!isValidDate($dateFrom) || !isValidDate($dateTo)) {
-        echo json_encode(['success' => false, 'error' => 'Invalid date format. Use YYYY-MM-DD']);
+        echo json_encode(['error' => 'Invalid date format. Use YYYY-MM-DD']);
         exit;
     }
     
     if ($dateFrom > $dateTo) {
-        echo json_encode(['success' => false, 'error' => 'Date "from" must be before or equal to "to"']);
+        echo json_encode(['error' => 'Date "from" must be before or equal to "to"']);
         exit;
     }
-    
-    // ────────────────────────────────────────────────────────────────────
-    // Call stored procedure sp_get_revenue_summary
-    // or create a custom sp_get_top_vehicles_by_date
-    // 
-    // For now, use direct query with parameterized statement
-    // ────────────────────────────────────────────────────────────────────
     
     $stmt = $conn->prepare("
         SELECT
@@ -115,7 +98,7 @@ if ($hasFrom && $hasTo) {
     
     if (!$stmt) {
         error_log("Prepare failed: " . $conn->error);
-        echo json_encode(['success' => false, 'error' => 'System error']);
+        echo json_encode(['error' => 'System error']);
         exit;
     }
     
@@ -123,7 +106,7 @@ if ($hasFrom && $hasTo) {
     
     if (!$stmt->execute()) {
         error_log("Execute failed: " . $stmt->error);
-        echo json_encode(['success' => false, 'error' => 'System error']);
+        echo json_encode(['error' => 'System error']);
         exit;
     }
     
@@ -145,12 +128,7 @@ if ($hasFrom && $hasTo) {
     $stmt->close();
     $conn->close();
     
-    echo json_encode([
-        'success' => true,
-        'period' => "from_$dateFrom to_$dateTo",
-        'count' => count($data),
-        'data' => $data
-    ]);
+    echo json_encode($data);
     exit;
 }
 
@@ -158,9 +136,6 @@ if ($hasFrom && $hasTo) {
 // Error: Partial date range (only from or only to)
 // ============================================================================
 
-echo json_encode([
-    'success' => false,
-    'error' => 'Must provide both "from" and "to" parameters, or neither for current month'
-]);
+echo json_encode(['error' => 'Must provide both "from" and "to" parameters, or neither for current month']);
 $conn->close();
 ?>

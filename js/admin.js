@@ -1200,6 +1200,147 @@ function loadTopVehiclesReport() {
         .catch(err => console.error("Top vehicles error:", err));
 }
 
+function loadDashboardStats() {
+    if (!document.getElementById('nowTime')) return;
+
+    fetch("backend/dashboard/get_dashboard_stats.php")
+        .then(res => res.json())
+        .then(stats => {
+            const cards = document.querySelectorAll('.stat-card .stat-value');
+            if (cards[0]) cards[0].setAttribute('data-target', stats.total_slots);
+            if (cards[1]) cards[1].setAttribute('data-target', stats.available);
+            if (cards[2]) cards[2].setAttribute('data-target', stats.occupied);
+            if (cards[3]) cards[3].setAttribute('data-target', stats.entries_today);
+            if (cards[4]) {
+                cards[4].setAttribute('data-target', stats.revenue_today);
+                cards[4].setAttribute('data-prefix', '₱');
+            }
+
+            // Update occupancy % text in stat-sub
+            const subEls = document.querySelectorAll('.stat-card .stat-sub .stat-change');
+            if (subEls[0]) subEls[0].textContent = stats.occupancy_pct + '%';
+
+            animateStats();
+            drawDonut(
+                stats.available,
+                stats.occupied,
+                stats.reserved    ?? 0,
+                stats.maintenance ?? 0
+            );
+        })
+        .catch(err => console.error("Dashboard stats error:", err));
+}
+
+function loadRecentActivity() {
+    const logList = document.querySelector('.log-list');
+    if (!logList) return;
+
+    fetch("backend/dashboard/get_recent_logs.php")
+        .then(res => res.json())
+        .then(logs => {
+            logList.innerHTML = logs.map(log => {
+                const isEntry  = log.log_status === 'in';
+                const isDenied = log.log_status === 'denied';
+                const time     = new Date(isEntry ? log.time_in : log.time_out)
+                    .toLocaleTimeString('en-PH', { hour: '2-digit', minute: '2-digit' });
+
+                const dotClass = isEntry ? 'entry' : isDenied ? 'denied' : 'exit';
+                const label    = isEntry ? 'Entry' : isDenied ? 'Denied' : 'Exit';
+                const fee      = log.payment_amount ? ` · ₱${Number(log.payment_amount).toLocaleString()}` : '';
+                const slot     = log.slot_number ? `Slot ${log.slot_number}` : 'No slot';
+
+                return `
+                    <div class="log-item">
+                        <div class="log-dot ${dotClass}"></div>
+                        <div class="log-content">
+                            <div class="log-title">${label} — ${log.plate_number}</div>
+                            <div class="log-sub">${slot} · ${log.owner_name}${fee}</div>
+                        </div>
+                        <div class="log-time">${time}</div>
+                    </div>`;
+            }).join('');
+        })
+        .catch(err => console.error("Recent activity error:", err));
+}
+
+function loadWeeklyChart() {
+    const chart = document.querySelector('.bar-chart');
+    if (!chart) return;
+
+    fetch("backend/dashboard/get_weekly_entries.php")
+        .then(res => res.json())
+        .then(data => {
+            const days    = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+            const dayMap  = {};
+            data.forEach(d => { dayMap[d.day] = d.count; });
+
+            const max = Math.max(...days.map(d => dayMap[d] || 0), 1);
+
+            chart.innerHTML = days.map(day => {
+                const count = dayMap[day] || 0;
+                const pct   = Math.round((count / max) * 100);
+                return `
+                    <div class="bar-col">
+                        <div class="bar" style="height:${pct}%;" title="${count} entries"></div>
+                        <div class="bar-label">${day}</div>
+                    </div>`;
+            }).join('');
+        })
+        .catch(err => console.error("Weekly chart error:", err));
+}
+
+function initDashboardRefresh() {
+    if (!document.getElementById('nowTime')) return;
+
+    // Refresh every 30 seconds
+    setInterval(() => {
+        loadDashboardStats();
+        loadRecentActivity();
+        loadWeeklyChart();
+        document.getElementById('nowTime').textContent =
+            new Date().toLocaleString('en-PH', { dateStyle: 'long', timeStyle: 'short' });
+    }, 30000);
+}
+
+function drawDonut(available, occupied, reserved, maintenance) {
+    const donutEl = document.getElementById('donutSvg');
+    if (!donutEl) return;
+
+    const data = [
+        { val: available,   color: '#2D7A4F' },
+        { val: occupied,    color: '#C0392B' },
+        { val: reserved,    color: '#C9A84C' },
+        { val: maintenance, color: '#A0A0A0' },
+    ];
+
+    const total = data.reduce((a, b) => a + b.val, 0) || 1;
+    const cx = 60, cy = 60, r = 48, strokeW = 14;
+    const circ = 2 * Math.PI * r;
+    let offset = 0;
+
+    donutEl.innerHTML = data.map(d => {
+        const pct  = d.val / total;
+        const dash = pct * circ;
+        const gap  = circ - dash;
+        const el   = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${d.color}"
+            stroke-width="${strokeW}"
+            stroke-dasharray="${dash} ${gap}"
+            stroke-dashoffset="${-offset * circ + circ * 0.25}"
+            transform="rotate(-90 ${cx} ${cy})"/>`;
+        offset += pct;
+        return el;
+    }).join('');
+
+    // Update legend values
+    const el = id => document.getElementById(id);
+    if (el('legendAvailable'))   el('legendAvailable').textContent   = available;
+    if (el('legendOccupied'))    el('legendOccupied').textContent    = occupied;
+    if (el('legendReserved'))    el('legendReserved').textContent    = reserved;
+    if (el('legendMaintenance')) el('legendMaintenance').textContent = maintenance;
+}
+
+
+
 document.addEventListener('DOMContentLoaded', () => {
   initSidebar();
   initModals();
@@ -1207,7 +1348,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initSearch();
   initFilterSelect();
   initSlots();
-  initCharts();
   setTimeout(animateStats, 200);
   initFadeUp();
   initCreateUser();
@@ -1236,4 +1376,9 @@ document.addEventListener('DOMContentLoaded', () => {
   loadTopVehiclesReport();
 
   initAvatarPreviews();
+
+  loadDashboardStats();
+    loadRecentActivity();
+    loadWeeklyChart();
+    initDashboardRefresh();
 });

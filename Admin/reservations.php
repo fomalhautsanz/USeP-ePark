@@ -253,7 +253,7 @@ error_reporting(E_ALL);
 // ============================================================================
 
 const ENDPOINT_GET    = '/Admin/backend/reservations/get_reservations.php';
-const ENDPOINT_UPDATE = '/Admin/backend/reservations/update_reservation.php';
+const ENDPOINT_UPDATE = '/Admin/backend/reservations/update_reservations.php';
 
 const PAGE_SIZE = 10;
 
@@ -386,7 +386,9 @@ function renderTable() {
         <td class="td-mono">${esc(r.ref_number)}</td>
         <td>
           <div class="user-card">
-            <img src="${avatarFallback(r)}" class="user-avatar" alt="" style="width:32px;height:32px;border-radius:6px;object-fit:cover;">
+            <img src="../User/assets/uploads/${r.profile_picture}" alt="${esc(r.full_name)}"
+                                 style="width:38px;height:38px;border-radius:8px;object-fit:cover;flex-shrink:0;"
+                                 onerror="this.src='../assets/avatars/avatar-student.svg'">
             <div>
               <div class="user-info-name">${esc(r.full_name)}</div>
               <div class="user-info-sub">${esc(r.user_role)}</div>

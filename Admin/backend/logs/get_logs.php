@@ -10,8 +10,8 @@ if (!$conn) {
 
 // ── Input validation ─────────────────────────────────────────────────────────
 
-// Filter by log_status — map frontend labels to DB values
-$allowedStatuses = ['in', 'out'];   // extend to 'denied' once ENUM is altered
+// Filter by log_status — valid DB values: 'in', 'out', 'denied'
+$allowedStatuses = ['in', 'out', 'denied'];
 $statusFilter    = $_GET['status'] ?? '';
 if ($statusFilter && !in_array($statusFilter, $allowedStatuses, true)) {
     echo json_encode(['error' => 'Invalid status filter']);
@@ -87,6 +87,7 @@ $countStmt->close();
 $totalPages = (int) ceil($totalRows / $perPage);
 
 // ── Fetch paginated rows ──────────────────────────────────────────────────────
+// Only select columns that actually exist in view_logs_list
 $dataSql  = "
     SELECT
         log_id,
@@ -94,15 +95,18 @@ $dataSql  = "
         plate_number,
         vehicle_type,
         owner_name,
+        user_code,
         slot_number,
         location_area,
         time_in,
         time_out,
         total_duration,
         parking_fee,
+        payment_id,
         payment_amount,
-        payment_method,
-        receipt_number
+        payment_date,
+        receipt_number,
+        reservation_id
     FROM view_logs_list
     $where
     ORDER BY time_in DESC
