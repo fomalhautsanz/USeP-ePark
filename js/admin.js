@@ -378,6 +378,7 @@ function initEditUser() {
 }
 
 function openEditModal(user) {
+    console.log("Opening edit modal for user:", user.user_id, user);
     document.getElementById("editUserId").value    = user.user_id;
     document.getElementById("editFirstName").value = user.firstname;
     document.getElementById("editLastName").value  = user.lastname;
@@ -386,7 +387,36 @@ function openEditModal(user) {
     document.getElementById("editRole").value      = user.role;
     document.getElementById("editPassword").value  = "";
 
+    // ── Set avatar preview ────────────────────────────────────────────────────
+    const preview = document.getElementById("editAvatarPreview");
+    if (preview) {
+        preview.src = user.profile_picture && user.profile_picture.trim()
+            ? '../User/assets/uploads/' + user.profile_picture
+            : '../assets/avatars/avatar-staff.svg';
+    }
+
     document.getElementById("editUserModal").classList.add("open");
+}
+
+function initAvatarPreviews() {
+    const editInput = document.getElementById('editProfilePicture');
+
+    if (editInput) {
+        editInput.addEventListener('change', function () {
+            previewAvatar(this, 'editAvatarPreview');
+        });
+    }
+}
+
+function previewAvatar(input, previewId) {
+    const file = input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+        const el = document.getElementById(previewId);
+        if (el) el.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
 }
 
 function openViewModal(user) {
@@ -505,7 +535,7 @@ function loadSessionUser() {
         .then(res => res.json())
         .then(data => {
             if (data.error) {
-                window.location.href = "http://localhost/USeP-ePark-main/Login/login.html";
+                window.location.href = "../Login/login.html";
                 return;
             }
             const nameEl   = document.querySelector(".topbar-user-name");
@@ -514,10 +544,17 @@ function loadSessionUser() {
 
             if (nameEl)   nameEl.textContent = data.firstname + " " + data.lastname;
             if (roleEl)   roleEl.textContent = data.role.charAt(0).toUpperCase() + data.role.slice(1);
-            if (avatarEl) avatarEl.src = `../assets/avatars/avatar-${data.role}.svg`;
+            if (avatarEl) {
+                avatarEl.src = data.profile_picture && data.profile_picture.trim()
+                    ? '../User/assets/uploads/' + data.profile_picture
+                    : '../assets/avatars/avatar-' + data.role + '.svg';
+                avatarEl.onerror = () => {
+                    avatarEl.src = '../assets/avatars/avatar-' + data.role + '.svg';
+                };
+            }
         })
         .catch(() => {
-            window.location.href = "http://localhost/USeP-ePark-main/Login/login.html";
+            window.location.href = "../Login/login.html";
         });
 }
 
@@ -568,9 +605,9 @@ function loadVehicles() {
                     <td><span class="td-mono">${v.plate_number}</span></td>
                     <td>
                         <div class="user-card">
-                            <img src="../assets/avatars/avatar-${v.role}.svg"
-                                 style="width:32px;height:32px;border-radius:6px;object-fit:cover;"
-                                 onerror="this.src='../assets/avatars/avatar-guest.svg'">
+                            <img src="../User/assets/uploads/${v.profile_picture}" alt="${fullName}"
+                                 style="width:38px;height:38px;border-radius:8px;object-fit:cover;flex-shrink:0;"
+                                 onerror="this.src='../assets/avatars/avatar-student.svg'">
                             <div>
                                 <div class="user-info-name">${fullName}</div>
                                 <div class="user-info-sub">${v.role.charAt(0).toUpperCase() + v.role.slice(1)}</div>
@@ -1197,4 +1234,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initReports();
   loadReportSummary();
   loadTopVehiclesReport();
+
+  initAvatarPreviews();
 });

@@ -14,8 +14,30 @@ $email     = trim($_POST['email']      ?? '');
 $phone     = trim($_POST['phone']      ?? '');
 $role      = $_POST['role']            ?? '';
 $password  = $_POST['password']        ?? '';
+$profile_picture = null;
+
 
 // ── Validation ───────────────────────────────────────────────────────────────
+if (isset($_FILES['profile_picture']) && $_FILES['profile_picture']['error'] === UPLOAD_ERR_OK) {
+    $allowed = ['jpg', 'jpeg', 'png', 'webp'];
+    $ext     = strtolower(pathinfo($_FILES['profile_picture']['name'], PATHINFO_EXTENSION));
+
+    if (!in_array($ext, $allowed)) {
+        echo json_encode(['success' => false, 'message' => 'Invalid image format']);
+        exit;
+    }
+
+    $filename = 'user_' . uniqid() . '.' . $ext;
+    $dest = __DIR__ . '/../../../User/assets/uploads/' . $filename;
+
+    if (!move_uploaded_file($_FILES['profile_picture']['tmp_name'], $dest)) {
+        echo json_encode(['success' => false, 'message' => 'Failed to save profile picture']);
+        exit;
+    }
+
+    $profile_picture = $filename;
+}
+
 if (!$user_id) {
     echo json_encode(['success' => false, 'message' => 'No user ID provided']);
     exit;
@@ -86,10 +108,36 @@ if (!$outStmt) {
 
 $result = $outStmt->fetch_assoc();
 $outStmt->close();
-$conn->close();
+
 
 // ── Respond ───────────────────────────────────────────────────────────────────
 if ($result && str_starts_with($result['message'], 'SUCCESS')) {
+
+    // ── Update profile picture if a new one was uploaded ─────────────────────
+    if ($profile_picture) {
+        // Delete old picture from disk first
+        $oldStmt = $conn->prepare("SELECT profile_picture FROM users WHERE user_id = ?");
+        if ($oldStmt) {
+            $oldStmt->bind_param("i", $user_id);
+            $oldStmt->execute();
+            $oldStmt->bind_result($oldPic);
+            $oldStmt->fetch();
+            $oldStmt->close();
+
+            if ($oldPic) {
+                $oldPath = __DIR__ . '/../../User/assets/uploads/' . $oldPic;
+                if (file_exists($oldPath)) unlink($oldPath);
+            }
+        }
+
+        $picStmt = $conn->prepare("UPDATE users SET profile_picture = ? WHERE user_id = ?");
+        if ($picStmt) {
+            $picStmt->bind_param("si", $profile_picture, $user_id);
+            $picStmt->execute();
+            $picStmt->close();
+        }
+    }
+
     echo json_encode(['success' => true]);
 } else {
     $errMsg = isset($result['message'])
@@ -98,4 +146,7 @@ if ($result && str_starts_with($result['message'], 'SUCCESS')) {
     error_log("sp_update_user_full error: " . ($result['message'] ?? 'null'));
     echo json_encode(['success' => false, 'message' => $errMsg]);
 }
+
+$conn->close();
+
 ?>
