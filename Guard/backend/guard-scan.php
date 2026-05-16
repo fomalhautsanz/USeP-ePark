@@ -52,7 +52,7 @@ if (empty($qr_data) || $qr_data === 'null') {
 }
 
 // ── 3. Call stored procedure ─────────────────────────────────────────────────
-$stmt = $conn->prepare("CALL sp_guard_process_scan(?, ?, @success, @action, @message, @plate, @vtype, @owner, @slot, @ts, @dur)");
+$stmt = $conn->prepare("CALL sp_guard_process_scan(?, ?, @success, @action, @message, @plate, @vtype, @owner, @slot, @ts, @dur, @fee)");
 if (!$stmt) {
     error_log('[guard-scan] prepare failed: ' . $conn->error);
     echo json_encode(['success' => false, 'action' => 'error', 'message' => 'System error (S1).']);
@@ -79,7 +79,8 @@ $out = $conn->query("SELECT
     @owner   AS owner_name,
     @slot    AS slot_number,
     @ts      AS timestamp,
-    @dur     AS duration
+    @dur     AS duration,
+    @fee     AS fee
 ");
 
 if (!$out) {
@@ -103,4 +104,5 @@ echo json_encode([
     'slot_number'  => $row['slot_number']  ?? null,
     'timestamp'    => $row['timestamp']    ?? null,
     'duration'     => $row['duration']     ?? null,
+    'fee'          => $row['fee']          ?? null,   // NEW
 ]);

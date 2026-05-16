@@ -286,6 +286,10 @@
         <span class="rlabel">Slot</span>
         <span class="rvalue" id="rSlot">–</span>
       </div>
+      <div class="result-row" id="rowFee" style="display:none">
+          <span class="rlabel">Total Fee</span>
+          <span class="rvalue" id="rFee">–</span>
+      </div>
 
       <button class="btn-rescan" onclick="rescan()">Scan Another</button>
     </div>
@@ -408,6 +412,11 @@
         sub.textContent   = data.message || 'Vehicle has exited. Slot is now free.';
         icon.setAttribute('stroke', '#E65100');
         icon.innerHTML    = '<circle cx="12" cy="12" r="10"/><line x1="8" y1="12" x2="16" y2="12"/>';
+
+        if (data.fee !== null && data.fee !== undefined) {
+        document.getElementById('rFee').textContent = '₱' + parseFloat(data.fee).toFixed(2);
+        document.getElementById('rowFee').style.display = 'flex';
+        }
       } else {
         badge.className = 'result-badge error';
         title.className = 'result-title error';
@@ -422,12 +431,13 @@
       if (stream) stream.getTracks().forEach(t => t.stop());
     }
 
-    function rescan() {
-      document.getElementById('resultCard').classList.remove('show');
-      document.getElementById('rowSlot').style.display = 'none';
-      scanning = true;
-      startCamera();
-    }
+        function rescan() {
+          document.getElementById('resultCard').classList.remove('show');
+          document.getElementById('rowSlot').style.display = 'none';
+          document.getElementById('rowFee').style.display = 'none';  
+          scanning = true;
+          startCamera();
+      }
 
     startCamera();
   </script>

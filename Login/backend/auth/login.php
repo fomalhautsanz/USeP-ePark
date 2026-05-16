@@ -111,9 +111,10 @@ $_SESSION['qr_code'] = $row['user_code'];
 $role = $user['role'];
 
 $redirect = match($role) {
-    'admin', 'staff' => '/Admin/dashboard.php',
-    'customer'       => '/User/userDashboard.php', // DAPAT ANI 
-    default          => null
+    'admin'     => '/Admin/dashboard.php',
+    'staff'     => '/Guard/guard-login.html',
+    'customer'  => '/User/userDashboard.php', // DAPAT ANI 
+    default     => null
 };
 
 if (!$redirect) {

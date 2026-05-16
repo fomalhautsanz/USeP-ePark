@@ -15,6 +15,7 @@ $pic = !empty($profile_picture) ? 'assets/uploads/' . $profile_picture : 'assets
 $firstname = $_SESSION['firstname'];
 $lastname = $_SESSION['lastname'];
 $email = $_SESSION['email'];
+$user_code = $_SESSION['user_code'];
 $contact_number = $_SESSION['contact_number'];
 
 // FIX #1: vehicle_type and plate_number come from the `vehicle` table (not `users`),
@@ -177,6 +178,11 @@ $birthdate = $_SESSION['birthdate'] ?? null;
             <div class="info-field">
               <span class="info-label">Name</span>
               <span class="info-value"><?php echo htmlspecialchars($firstname . ' ' . $lastname); ?></span>
+            </div>
+
+            <div class="info-field">
+              <span class="info-label">User Code</span>
+              <span class="info-value"><?php echo htmlspecialchars($user_code)?></span>
             </div>
 
             <div class="info-field">

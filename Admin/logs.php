@@ -85,11 +85,33 @@ if ($_SESSION['role'] === 'customer') {
         <img src="../assets/icons/icon-bell.svg" alt="Notifications" style="width:17px;height:17px;">
         <span class="topbar-notif-dot"></span>
       </button>
-      <div class="topbar-user">
-        <img src="../assets/avatars/avatar-admin.svg" class="topbar-avatar" alt="Admin" style="width:30px;height:30px;border-radius:6px;object-fit:cover;">
+      
+      <div class="topbar-user" id="userMenuTrigger" style="position:relative;cursor:pointer;">
+        <img src="../assets/avatars/avatar-admin.svg" class="topbar-avatar" alt="Admin"
+            style="width:30px;height:30px;border-radius:6px;object-fit:cover;">
         <div class="topbar-user-info">
-          <div class="topbar-user-name"><?= htmlspecialchars($_SESSION['firstname'] ?? 'Admin') ?></div>
-          <div class="topbar-user-role"><?= htmlspecialchars(ucfirst($_SESSION['role'] ?? 'Admin')) ?></div>
+          <div class="topbar-user-name">Admin</div>
+          <div class="topbar-user-role">Superadmin</div>
+        </div>
+        <!-- Dropdown: direct child of topbar-user so position:absolute anchors correctly -->
+        <div id="userDropdownMenu"
+            style="display:none;position:absolute;right:0;top:calc(100% + 8px);
+                    background:#fff;border:1px solid var(--border);border-radius:10px;
+                    box-shadow:0 4px 16px rgba(0,0,0,0.10);min-width:160px;z-index:999;overflow:hidden;">
+          <a href="../Login/backend/auth/logout.php"
+            style="display:flex;align-items:center;gap:10px;padding:12px 16px;color:#6b0606;
+                    font-size:14px;font-weight:500;text-decoration:none;transition:background 0.15s;"
+            onmouseover="this.style.background='#faf0f0'"
+            onmouseout="this.style.background='#fff'">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+              <polyline points="16 17 21 12 16 7"/>
+              <line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+            Log Out
+          </a>
         </div>
       </div>
     </header>

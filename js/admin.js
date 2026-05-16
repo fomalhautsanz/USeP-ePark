@@ -540,10 +540,12 @@ function loadSessionUser() {
             }
             const nameEl   = document.querySelector(".topbar-user-name");
             const roleEl   = document.querySelector(".topbar-user-role");
-            const avatarEl = document.querySelector(".topbar-avatar");
-
-            if (nameEl)   nameEl.textContent = data.firstname + " " + data.lastname;
-            if (roleEl)   roleEl.textContent = data.role.charAt(0).toUpperCase() + data.role.slice(1);
+            // FIXED: select only the avatar inside topbar, not the dropdown's logout icon
+            const avatarEl = document.querySelector("#userMenuTrigger .topbar-avatar")
+                          || document.querySelector(".topbar-user .topbar-avatar");
+ 
+            if (nameEl) nameEl.textContent = data.firstname + " " + data.lastname;
+            if (roleEl) roleEl.textContent = data.role.charAt(0).toUpperCase() + data.role.slice(1);
             if (avatarEl) {
                 avatarEl.src = data.profile_picture && data.profile_picture.trim()
                     ? '../User/assets/uploads/' + data.profile_picture
@@ -558,18 +560,25 @@ function loadSessionUser() {
         });
 }
 
-function initLogout() {
-    const logoutBtn = document.getElementById("logoutBtn");
-    if (!logoutBtn) return;
-
-    logoutBtn.addEventListener("click", () => {
-        fetch("/Login/backend/auth/logout.php")
-            .then(() => {
-                window.location.href = "http://localhost/USeP-ePark-main/Login/login.html";
-            })
-            .catch(() => {
-                window.location.href = "http://localhost/USeP-ePark-main/Login/login.html";
-            });
+function initUserDropdown() {
+    const trigger  = document.getElementById('userMenuTrigger')
+                  || document.getElementById('userDropdownToggle');
+    const dropdown = document.getElementById('userDropdownMenu');
+ 
+    if (!trigger || !dropdown) return;
+ 
+    trigger.addEventListener('click', function (e) {
+        e.stopPropagation();
+        const isOpen = dropdown.style.display === 'block';
+        dropdown.style.display = isOpen ? 'none' : 'block';
+    });
+ 
+    document.addEventListener('click', function () {
+        if (dropdown) dropdown.style.display = 'none';
+    });
+ 
+    dropdown.addEventListener('click', function (e) {
+        e.stopPropagation();
     });
 }
 
@@ -1339,6 +1348,78 @@ function drawDonut(available, occupied, reserved, maintenance) {
     if (el('legendMaintenance')) el('legendMaintenance').textContent = maintenance;
 }
 
+function loadPendingReservations() {
+    const tbody = document.querySelector('#pendingReservationsTable tbody');
+    if (!tbody) return;
+ 
+    fetch('backend/dashboard/get_pending_reservations.php')
+        .then(res => res.json())
+        .then(data => {
+            // Update the live badge count in the sidebar nav item
+            const count   = Array.isArray(data) ? data.length : 0;
+            const badge   = document.getElementById('reservationBadge');
+            const counter = document.getElementById('pendingCount');
+ 
+            if (badge)   { badge.textContent   = count || ''; badge.style.display   = count ? '' : 'none'; }
+            if (counter) { counter.textContent  = count || ''; counter.style.display = count ? '' : 'none'; }
+ 
+            if (data.error) {
+                tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:2rem;color:var(--danger);">${data.error}</td></tr>`;
+                return;
+            }
+ 
+            if (!count) {
+                tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:2rem;color:var(--text-muted);">No active reservations</td></tr>`;
+                return;
+            }
+ 
+            const avatarSrc = r =>
+                r.profile_picture && r.profile_picture.trim()
+                    ? `../User/assets/uploads/${r.profile_picture}`
+                    : `../assets/avatars/avatar-${r.user_role}.svg`;
+ 
+            // Expiry warning: highlight rows expiring within 15 minutes
+            const expiryStyle = r =>
+                r.minutes_until_expiry <= 15 && r.minutes_until_expiry >= 0
+                    ? 'background:var(--warning-bg,#fff8e1);'
+                    : '';
+ 
+            tbody.innerHTML = data.map(r => `
+                <tr style="${expiryStyle(r)}">
+                    <td>
+                        <div class="user-card">
+                            <img src="${avatarSrc(r)}"
+                                 alt="${r.full_name}"
+                                 style="width:38px;height:38px;border-radius:8px;object-fit:cover;flex-shrink:0;"
+                                 onerror="this.src='../assets/avatars/avatar-student.svg'">
+                            <div>
+                                <div class="user-info-name">${r.first_initial}</div>
+                                <div class="user-info-sub" style="text-transform:capitalize;">${r.user_role}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="td-mono">${r.slot_number}</td>
+                    <td style="font-size:12px;">
+                        <div>${r.time_label}</div>
+                        <div style="color:var(--text-muted);font-size:11px;">${r.date_label}</div>
+                        ${r.minutes_until_expiry <= 15 && r.minutes_until_expiry >= 0
+                            ? `<div style="color:var(--warning,#b7791f);font-size:10px;font-weight:700;">Expires in ${r.minutes_until_expiry}m</div>`
+                            : ''}
+                    </td>
+                    <td>
+                        <span class="badge badge-warning">
+                            <span class="badge-dot"></span>Active
+                        </span>
+                    </td>
+                </tr>
+            `).join('');
+        })
+        .catch(err => {
+            console.error('loadPendingReservations:', err);
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:2rem;color:var(--danger);">Failed to load</td></tr>`;
+        });
+}
+
 
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -1356,7 +1437,7 @@ document.addEventListener('DOMContentLoaded', () => {
   loadUsers();
   loadStats();
   loadSessionUser();
-  initLogout();
+  initUserDropdown();
 
   loadVehicles();
   loadVehicleStats();
@@ -1381,4 +1462,5 @@ document.addEventListener('DOMContentLoaded', () => {
     loadRecentActivity();
     loadWeeklyChart();
     initDashboardRefresh();
+    loadPendingReservations();
 });

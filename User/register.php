@@ -21,12 +21,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $lastname       = trim($_POST['lastname'] ?? '');
     $email          = trim($_POST['email'] ?? '');
     $contact_number = trim($_POST['contact_number'] ?? '');
-    $username       = trim($_POST['username'] ?? '');
     $password       = $_POST['password'] ?? '';
     $plate_number   = strtoupper(trim($_POST['plate_number'] ?? ''));
     $vehicle_type   = trim($_POST['vehicle_type'] ?? '');
 
-    if (!$firstname || !$lastname || !$email || !$contact_number || !$username || !$password || !$plate_number || !$vehicle_type) {
+    // ── Username field removed; user_code is now auto-generated ──
+
+    if (!$firstname || !$lastname || !$email || !$contact_number || !$password || !$plate_number || !$vehicle_type) {
         echo json_encode(['success' => false, 'message' => 'All fields are required.']);
         exit;
     }
@@ -39,6 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
+    // ── Check duplicate email ──
     $checkEmail = mysqli_prepare($conn, "SELECT user_id FROM users WHERE email = ?");
     mysqli_stmt_bind_param($checkEmail, 's', $email);
     mysqli_stmt_execute($checkEmail);
@@ -50,23 +52,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     mysqli_stmt_close($checkEmail);
 
-    $checkUsername = mysqli_prepare($conn, "SELECT user_id FROM users WHERE user_code = ?");
-    mysqli_stmt_bind_param($checkUsername, 's', $username);
-    mysqli_stmt_execute($checkUsername);
-    mysqli_stmt_store_result($checkUsername);
-    if (mysqli_stmt_num_rows($checkUsername) > 0) {
-        echo json_encode(['success' => false, 'message' => 'Username is already taken.']);
-        mysqli_stmt_close($checkUsername);
+    // ── Auto-generate user_code in CUS-YYYY-XXXX format ──
+    $year        = date('Y');
+    $likePattern = "CUS-$year-%";
+
+    $seqStmt = mysqli_prepare($conn, "
+        SELECT COALESCE(MAX(CAST(SUBSTRING_INDEX(user_code, '-', -1) AS UNSIGNED)), 0)
+        FROM users
+        WHERE role = 'customer' AND user_code LIKE ?
+    ");
+    if (!$seqStmt) {
+        echo json_encode(['success' => false, 'message' => 'System error (code generation failed).']);
         exit;
     }
-    mysqli_stmt_close($checkUsername);
+    mysqli_stmt_bind_param($seqStmt, 's', $likePattern);
+    mysqli_stmt_execute($seqStmt);
+    mysqli_stmt_bind_result($seqStmt, $maxSeq);
+    mysqli_stmt_fetch($seqStmt);
+    mysqli_stmt_close($seqStmt);
 
+    $sequence  = str_pad($maxSeq + 1, 4, '0', STR_PAD_LEFT);
+    $user_code = "CUS-$year-$sequence";
+
+    // ── Hash password & set defaults ──
     $password_hash = password_hash($password, PASSWORD_BCRYPT);
     $role   = 'customer';
     $status = 'active';
 
-    $insertUser = mysqli_prepare($conn, "INSERT INTO users (firstname, lastname, email, contact_number, role, password_hash, status, user_code, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())");
-    mysqli_stmt_bind_param($insertUser, 'ssssssss', $firstname, $lastname, $email, $contact_number, $role, $password_hash, $status, $username);
+    // ── Insert user (user_code replaces the old username field) ──
+    $insertUser = mysqli_prepare($conn, "
+        INSERT INTO users
+            (firstname, lastname, email, contact_number, role, password_hash, status, user_code, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())
+    ");
+    mysqli_stmt_bind_param($insertUser, 'ssssssss',
+        $firstname, $lastname, $email, $contact_number,
+        $role, $password_hash, $status, $user_code
+    );
 
     if (!mysqli_stmt_execute($insertUser)) {
         echo json_encode(['success' => false, 'message' => mysqli_stmt_error($insertUser)]);
@@ -77,7 +99,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user_id = mysqli_insert_id($conn);
     mysqli_stmt_close($insertUser);
 
-    // ── Generate permanent QR token 
+    // ── Generate permanent QR token ──
     $qr_token = hash('sha256', $user_id . $email . time());
 
     $updateQR = mysqli_prepare($conn, "UPDATE users SET qr_code = ? WHERE user_id = ?");
@@ -85,10 +107,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     mysqli_stmt_execute($updateQR);
     mysqli_stmt_close($updateQR);
 
-    $insertVehicle = mysqli_prepare($conn, "INSERT INTO vehicle (user_id, plate_number, vehicle_type) VALUES (?, ?, ?)");
+    // ── Insert vehicle ──
+    $insertVehicle = mysqli_prepare($conn, "
+        INSERT INTO vehicle (user_id, plate_number, vehicle_type) VALUES (?, ?, ?)
+    ");
     mysqli_stmt_bind_param($insertVehicle, 'iss', $user_id, $plate_number, $vehicle_type);
 
     if (!mysqli_stmt_execute($insertVehicle)) {
+        // Roll back user insert on vehicle failure
         $deleteUser = mysqli_prepare($conn, "DELETE FROM users WHERE user_id = ?");
         mysqli_stmt_bind_param($deleteUser, 'i', $user_id);
         mysqli_stmt_execute($deleteUser);
@@ -363,10 +389,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     line-height: 1.7;
     margin-bottom: 4px;
   }
+  /* Show the generated code in the success toast */
+  .toast-code {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 6px 16px;
+    background: var(--gold-pale);
+    border: 1px solid var(--gold);
+    border-radius: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--maroon-dark);
+    letter-spacing: 1px;
+  }
   .toast-redirect {
     font-size: 12px;
     color: var(--text-muted);
-    margin-top: 8px;
+    margin-top: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -387,26 +427,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     transform-origin: left;
   }
 
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to   { opacity: 1; }
-  }
-  @keyframes popUp {
-    from { opacity: 0; transform: scale(0.8) translateY(20px); }
-    to   { opacity: 1; transform: scale(1) translateY(0); }
-  }
-  @keyframes progress {
-    from { width: 100%; }
-    to   { width: 0%; }
-  }
-  @keyframes spin {
-    from { transform: rotate(0deg); }
-    to   { transform: rotate(360deg); }
-  }
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
+  @keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes popUp   { from { opacity: 0; transform: scale(0.8) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+  @keyframes progress { from { width: 100%; } to { width: 0%; } }
+  @keyframes spin    { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  @keyframes fadeUp  { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
   @media (max-width: 700px) {
     .register-left { display: none; }
     .register-right { padding: 32px 24px; }
@@ -426,6 +452,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
     <h3>Account Created!</h3>
     <p>Your account has been successfully registered.</p>
+    <p style="font-size:12px;color:var(--text-muted);margin-top:6px;">Your user code is</p>
+    <span class="toast-code" id="toastUserCode">CUS-2025-0001</span>
     <div class="toast-redirect">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
       Redirecting to login...
@@ -449,15 +477,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="register-steps">
       <div class="register-step">
         <div class="step-dot">1</div>
-        <div class="step-text"><strong>Personal Info</strong>Name, email & contact</div>
+        <div class="step-text"><strong>Personal Info</strong>Name, email &amp; contact</div>
       </div>
       <div class="register-step">
         <div class="step-dot">2</div>
-        <div class="step-text"><strong>Account Setup</strong>Username & password</div>
+        <div class="step-text"><strong>Account Setup</strong>Password only — code is auto-assigned</div>
       </div>
       <div class="register-step">
         <div class="step-dot">3</div>
-        <div class="step-text"><strong>Vehicle Info</strong>Plate number & type</div>
+        <div class="step-text"><strong>Vehicle Info</strong>Plate number &amp; type</div>
       </div>
     </div>
   </div>
@@ -465,14 +493,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <!-- ── RIGHT PANEL ── -->
   <div class="register-right">
     <h2>Register</h2>
-    <p class="sub">Fill in the details below to create your account</p>
+    <p class="sub">Fill in the details below — your user code (e.g. CUS-2025-0001) will be assigned automatically</p>
 
     <div class="alert-msg error" id="errorMsg">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
       <span id="errorText">Please fill in all required fields.</span>
     </div>
 
-    <!-- SECTION 1 -->
+    <!-- SECTION 1: Personal Info -->
     <div class="section-label">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
       Personal Information
@@ -514,21 +542,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </div>
     </div>
 
-    <!-- SECTION 2 -->
+    <!-- SECTION 2: Account Setup (username field removed) -->
     <div class="section-label">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
       Account Setup
-    </div>
-    <div class="form-row single">
-      <div class="form-group">
-        <label class="form-label">Username</label>
-        <div class="input-wrap">
-          <span class="input-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/></svg></span>
-          <input type="text" class="form-control" id="username" placeholder="juandelacruz">
-        </div>
-        <span class="field-hint">This will be your login username.</span>
-        <span class="field-error" id="err-username">Username must be at least 3 characters.</span>
-      </div>
     </div>
     <div class="form-row">
       <div class="form-group">
@@ -555,7 +572,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </div>
     </div>
 
-    <!-- SECTION 3 -->
+    <!-- SECTION 3: Vehicle Info -->
     <div class="section-label">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21 8-2 2-1.5-3.7A2 2 0 0 0 15.646 5H8.4a2 2 0 0 0-1.903 1.257L5 10 3 8"/><path d="M7 14h.01"/><path d="M17 14h.01"/><rect width="18" height="8" x="3" y="10" rx="2"/><path d="M5 18v2"/><path d="M19 18v2"/></svg>
       Vehicle Information
@@ -619,20 +636,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   function validate() {
     let valid = true;
+
+    // Username field removed — no longer validated client-side
     const fields = [
-      { id: 'firstname',      errId: 'firstname', check: v => v.length > 0,                               msg: 'First name is required.' },
-      { id: 'lastname',       errId: 'lastname',  check: v => v.length > 0,                               msg: 'Last name is required.' },
-      { id: 'email',          errId: 'email',     check: v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v),       msg: 'Enter a valid email address.' },
-      { id: 'contact_number', errId: 'contact',   check: v => /^[0-9]{10,13}$/.test(v.replace(/\s/g,'')), msg: 'Enter a valid contact number.' },
-      { id: 'username',       errId: 'username',  check: v => v.length >= 3,                              msg: 'Username must be at least 3 characters.' },
-      { id: 'password',       errId: 'password',  check: v => v.length >= 8,                              msg: 'Password must be at least 8 characters.' },
-      { id: 'plate_number',   errId: 'plate',     check: v => v.length > 0,                               msg: 'Plate number is required.' },
-      { id: 'vehicle_type',   errId: 'vehicle',   check: v => v.length > 0,                               msg: 'Please select a vehicle type.' },
+      { id: 'firstname',      errId: 'firstname', check: v => v.length > 0,                                msg: 'First name is required.' },
+      { id: 'lastname',       errId: 'lastname',  check: v => v.length > 0,                                msg: 'Last name is required.' },
+      { id: 'email',          errId: 'email',     check: v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v),        msg: 'Enter a valid email address.' },
+      { id: 'contact_number', errId: 'contact',   check: v => /^[0-9]{10,13}$/.test(v.replace(/\s/g, '')), msg: 'Enter a valid contact number.' },
+      { id: 'password',       errId: 'password',  check: v => v.length >= 8,                               msg: 'Password must be at least 8 characters.' },
+      { id: 'plate_number',   errId: 'plate',     check: v => v.length > 0,                                msg: 'Plate number is required.' },
+      { id: 'vehicle_type',   errId: 'vehicle',   check: v => v.length > 0,                                msg: 'Please select a vehicle type.' },
     ];
 
     fields.forEach(f => {
-      const val = (document.getElementById(f.id)?.value || '').trim();
-      const ok  = f.check(val);
+      const val   = (document.getElementById(f.id)?.value || '').trim();
+      const ok    = f.check(val);
       const errEl = document.getElementById('err-' + f.errId);
       if (errEl) { errEl.textContent = f.msg; errEl.style.display = ok ? 'none' : 'block'; }
       setInputState(f.id, ok ? 'success' : 'error');
@@ -668,35 +686,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     formData.append('lastname',       document.getElementById('lastname').value.trim());
     formData.append('email',          document.getElementById('email').value.trim());
     formData.append('contact_number', document.getElementById('contact_number').value.trim());
-    formData.append('username',       document.getElementById('username').value.trim());
+    // No 'username' appended — server generates user_code automatically
     formData.append('password',       document.getElementById('password').value);
     formData.append('plate_number',   document.getElementById('plate_number').value.trim().toUpperCase());
     formData.append('vehicle_type',   document.getElementById('vehicle_type').value);
 
-    fetch('register.php', {
-      method: 'POST',
-      body: formData
-    })
-    .then(res => res.json())
-    .then(data => {
-      if (data.success) {
-        // ── Show toast popup ──
-        document.getElementById('toastOverlay').classList.add('show');
-        setTimeout(() => { window.location.href = data.redirect; }, 2000);
-      } else {
+    fetch('register.php', { method: 'POST', body: formData })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          // Show the auto-generated code in the toast
+          if (data.user_code) {
+            document.getElementById('toastUserCode').textContent = data.user_code;
+          }
+          document.getElementById('toastOverlay').classList.add('show');
+          setTimeout(() => { window.location.href = data.redirect; }, 2500);
+        } else {
+          errorMsg.style.display = 'flex';
+          document.getElementById('errorText').textContent = data.message;
+        }
+      })
+      .catch(() => {
         errorMsg.style.display = 'flex';
-        document.getElementById('errorText').textContent = data.message;
-      }
-    })
-    .catch(() => {
-      errorMsg.style.display = 'flex';
-      document.getElementById('errorText').textContent = 'Server error. Please try again.';
-    });
+        document.getElementById('errorText').textContent = 'Server error. Please try again.';
+      });
   }
 
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Enter') handleRegister();
-  });
+  document.addEventListener('keydown', e => { if (e.key === 'Enter') handleRegister(); });
 </script>
 </body>
 </html>

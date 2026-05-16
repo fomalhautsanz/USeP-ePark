@@ -84,11 +84,33 @@ if ($_SESSION['role'] === 'customer') {
         <img src="../assets/icons/icon-bell.svg" alt="Notifications" style="width:17px;height:17px;">
         <span class="topbar-notif-dot"></span>
       </button>
-      <div class="topbar-user">
-        <img src="../assets/avatars/avatar-admin.svg" class="topbar-avatar" alt="Admin" style="width:30px;height:30px;border-radius:6px;object-fit:cover;">
+
+     <div class="topbar-user" id="userMenuTrigger" style="position:relative;cursor:pointer;">
+        <img src="../assets/avatars/avatar-admin.svg" class="topbar-avatar" alt="Admin"
+            style="width:30px;height:30px;border-radius:6px;object-fit:cover;">
         <div class="topbar-user-info">
           <div class="topbar-user-name">Admin</div>
           <div class="topbar-user-role">Superadmin</div>
+        </div>
+        <!-- Dropdown: direct child of topbar-user so position:absolute anchors correctly -->
+        <div id="userDropdownMenu"
+            style="display:none;position:absolute;right:0;top:calc(100% + 8px);
+                    background:#fff;border:1px solid var(--border);border-radius:10px;
+                    box-shadow:0 4px 16px rgba(0,0,0,0.10);min-width:160px;z-index:999;overflow:hidden;">
+          <a href="../Login/backend/auth/logout.php"
+            style="display:flex;align-items:center;gap:10px;padding:12px 16px;color:#6b0606;
+                    font-size:14px;font-weight:500;text-decoration:none;transition:background 0.15s;"
+            onmouseover="this.style.background='#faf0f0'"
+            onmouseout="this.style.background='#fff'">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+              <polyline points="16 17 21 12 16 7"/>
+              <line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+            Log Out
+          </a>
         </div>
       </div>
     </header>
@@ -248,43 +270,42 @@ if ($_SESSION['role'] === 'customer') {
           </div>
         </div>
 
-        <div class="card">
-          <div class="card-header">
-            <span class="card-title">Pending Reservations</span>
-            <a href="reservations.html" style="font-size:12px;color:var(--maroon);font-weight:600;">Manage →</a>
-          </div>
-          <div class="table-wrapper">
-            <table>
-              <thead>
-                <tr>
-                  <th>User</th>
-                  <th>Slot</th>
-                  <th>Time</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><div class="user-card"><img src="../assets/avatars/avatar-faculty.svg" class="user-avatar" alt="JD" style="width:38px;height:38px;border-radius:8px;object-fit:cover;"><div><div class="user-info-name">J. dela Cruz</div><div class="user-info-sub">Student</div></div></div></td>
-                  <td class="td-mono">A-07</td>
-                  <td style="font-size:12px;">9:00 AM</td>
-                  <td><span class="badge badge-warning"><span class="badge-dot"></span>Pending</span></td>
-                </tr>
-                <tr>
-                  <td><div class="user-card"><img src="../assets/avatars/avatar-student.svg" class="user-avatar" alt="MS" style="width:38px;height:38px;border-radius:8px;object-fit:cover;"><div><div class="user-info-name">M. Santos</div><div class="user-info-sub">Faculty</div></div></div></td>
-                  <td class="td-mono">B-02</td>
-                  <td style="font-size:12px;">10:30 AM</td>
-                  <td><span class="badge badge-warning"><span class="badge-dot"></span>Pending</span></td>
-                </tr>
-                <tr>
-                  <td><div class="user-card"><img src="../assets/avatars/avatar-staff.svg" class="user-avatar" alt="PR" style="width:38px;height:38px;border-radius:8px;object-fit:cover;"><div><div class="user-info-name">P. Reyes</div><div class="user-info-sub">Staff</div></div></div></td>
-                  <td class="td-mono">C-05</td>
-                  <td style="font-size:12px;">1:00 PM</td>
-                  <td><span class="badge badge-warning"><span class="badge-dot"></span>Pending</span></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+        <!-- Replace your existing Pending Reservations card in dashboard.php with this -->
+<!-- Read-only: no approve/reject buttons — managed in reservations.php -->
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title" style="display:flex;align-items:center;gap:8px;">
+            Pending Reservations
+            <span id="pendingCount"
+                  style="display:none;min-width:20px;height:20px;padding:0 6px;
+                        background:var(--maroon);color:#fff;border-radius:10px;
+                        font-size:11px;font-weight:700;text-align:center;line-height:20px;">
+            </span>
+          </span>
+          <a href="reservations.php" style="font-size:12px;color:var(--maroon);font-weight:600;">
+            Manage →
+          </a>
+        </div>
+        <div class="table-wrapper">
+          <table id="pendingReservationsTable">
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Slot</th>
+                <th>Time</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td colspan="4"
+                    style="text-align:center;padding:2rem;color:var(--text-muted);">
+                  Loading...
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
 

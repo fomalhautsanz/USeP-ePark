@@ -13,6 +13,7 @@ $result = $conn->query("
         SUM(available_slots) AS available,
         SUM(occupied_slots)  AS occupied,
         SUM(reserved_slots)  AS reserved,
+        SUM(maintenance_slots)  AS maintenance,
         SUM(total_slots)     AS total
     FROM view_slot_availability
 ");
